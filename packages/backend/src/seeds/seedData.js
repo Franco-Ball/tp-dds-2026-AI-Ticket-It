@@ -42,5 +42,7 @@ export async function cargarSeeds(force = false) {
   }
 
   inMemoryStore.isInitialized = true;
-  console.log("🌱 Datos semilla cargados exitosamente en InMemoryStore.");
+  if (process.env.NODE_ENV !== "test") {
+    console.log("🌱 Datos semilla cargados exitosamente en InMemoryStore.");
+  }
 }

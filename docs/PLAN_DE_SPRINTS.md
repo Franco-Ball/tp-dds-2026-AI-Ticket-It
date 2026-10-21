@@ -68,21 +68,21 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
 > **Objetivo:** Establecer la infraestructura del monorepo, el repositorio en memoria con semillas de prueba, los modelos del diagrama de dominio y el sistema completo de autenticación y autorización por roles.
 
 #### 1. Backend (`packages/backend`)
-- [ ] Configurar arquitectura de carpetas (`src/models`, `src/repositories`, `src/services`, `src/controllers`, `src/routes`, `src/middlewares`).
-- [ ] Implementar `InMemoryStore` singleton para almacenar colecciones de usuarios, eventos, compras, mensajes y reseñas.
-- [ ] Implementar modelo de dominio `Usuario` (id, nombre, apellido, email, passwordHash, rol: `COMPRADOR` | `ORGANIZADOR`, favoritos).
-- [ ] Implementar sistema de Auth con JWT:
+- [x] Configurar arquitectura de carpetas (`src/models`, `src/repositories`, `src/services`, `src/controllers`, `src/routes`, `src/middlewares`).
+- [x] Implementar `InMemoryStore` singleton para almacenar colecciones de usuarios, eventos, compras, mensajes y reseñas.
+- [x] Implementar modelo de dominio `Usuario` (id, nombre, apellido, email, passwordHash, rol: `COMPRADOR` | `ORGANIZADOR`, favoritos).
+- [x] Implementar sistema de Auth con JWT:
   - `POST /api/auth/register`: Registro de usuario especificando rol.
   - `POST /api/auth/login`: Autenticación con generación de token.
   - `GET /api/auth/me`: Obtención de datos del usuario autenticado.
-- [ ] Middleware `authMiddleware` para verificar token y `requireRole(['COMPRADOR', 'ORGANIZADOR'])`.
-- [ ] Cargar datos semilla (*seeds*) con usuarios de prueba (ej: `comprador@demo.com`, `organizador@demo.com`) para pruebas inmediatas.
+- [x] Middleware `authMiddleware` para verificar token y `requireRole(['COMPRADOR', 'ORGANIZADOR'])`.
+- [x] Cargar datos semilla (*seeds*) con usuarios de prueba (ej: `comprador@demo.com`, `organizador@demo.com`) para pruebas inmediatas.
 
 #### 2. Frontend (`packages/frontend`)
-- [ ] Instalar dependencias necesarias (`react-router-dom`, iconos, utilitarios de fecha).
-- [ ] Crear estructura base de diseño **Mobile-First** (contenedor con marco simulado para mobile, barra de estado superior).
-- [ ] Implementar `AuthContext` y `useAuth`: almacenamiento de token y usuario en `localStorage`, manejo de login, registro y logout.
-- [ ] Vistas de Frontend:
+- [x] Instalar dependencias necesarias (`react-router-dom`, iconos, utilitarios de fecha).
+- [x] Crear estructura base de diseño **Mobile-First** (contenedor con marco simulado para mobile, barra de estado superior).
+- [x] Implementar `AuthContext` y `useAuth`: almacenamiento de token y usuario en `localStorage`, manejo de login, registro y logout.
+- [x] Vistas de Frontend:
   - `LoginView`: Formulario con opción de alternar entre credenciales rápidas de prueba.
   - `RegisterView`: Formulario con selector de rol (*Comprador* / *Organizador*).
   - Barra de navegación inferior (*Bottom Bar*) dinámica según el rol del usuario autenticado.

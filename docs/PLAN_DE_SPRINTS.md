@@ -5,11 +5,11 @@
 
 ## 📌 1. Resumen Ejecutivo y Objetivos
 
-El presente documento define la planificación iterativa e incremental en **4 Sprints** para el desarrollo de la plataforma **AI Ticket It**, una solución integral para la publicación de eventos y venta de entradas.
+El presente documento define la planificación iterativa e incremental en **5 Sprints** para el desarrollo de la plataforma **AI Ticket It**, una solución integral para la publicación de eventos y venta de entradas.
 
 El plan cubre el 100% de los requerimientos técnicos y casos de uso especificados en la consigna de la cátedra:
 - **Backend:** Node.js + Express (ES Modules) con persistencia en memoria y arquitectura en capas.
-- **Frontend:** React (SPA) con enfoque de diseño *Mobile-First* (contenedor responsivo optimizado para simulación en dispositivos móviles).
+- **Frontend:** React Native (Expo) con soporte para ejecución nativa en dispositivos móviles (Expo Go / Emulador) y web, bajo un sistema de diseño visual pulido (*Clean & Bright*) basado en la identidad gráfica oficial de la cátedra.
 - **Seguridad y Sesión:** Autenticación completa basada en JWT con soporte para perfiles diferenciados (**Comprador** y **Organizador**).
 - **Flujo de Trabajo:** Apego estricto al estándar de ramas y convenciones definido en [GIT_FLOW.md](file:///Users/francoball/Estudio/UTN/3año/DDS/TP-Individual/tp-dds-2026-AI-Ticket-It/docs/GIT_FLOW.md).
 
@@ -22,15 +22,16 @@ El plan cubre el 100% de los requerimientos técnicos y casos de uso especificad
   - `models/`: Clases de dominio puras (`Usuario`, `Evento`, `TipoEntrada`, `Compra`, `CambioEstadoCompra`, `Mensaje`, `Resenia`, `Categoria`).
   - `repositories/`: Capa de acceso a datos en memoria (`InMemoryStore`) con colecciones indexadas e inicialización con datos semilla (*seed data*).
   - `services/`: Lógica de negocio (validación de cupos, transiciones de estado, cálculo de días y promedios de calificación).
-  - `controllers/`: Manejadores de solicitudes HTTP, parseo de parámetros y formateo de respuestas JSON.
-  - `middlewares/`: Autenticación JWT, verificación de roles y manejo centralizado de errores.
+  - `controllers/`: Manejadores de solicitudes HTTP, validación con esquemas Zod y formateo de respuestas JSON.
+  - `middlewares/`: Autenticación JWT, verificación de roles (`requireRole`) y manejo centralizado de errores.
   - `routes/`: Definición de endpoints organizados por recurso.
 
 ### 2.2 Módulo Frontend (`packages/frontend`)
-- **Diseño Mobile-First:** Contenedor central simulando interfaz móvil (`max-width: 480px`, centrado, sombra y soporte responsivo completo).
-- **Gestión de Estado:** React Context API para Autenticación (`AuthContext`) y notificaciones/alertas (`ToastContext`).
-- **Navegación:** Enrutamiento cliente (React Router DOM o switch navigation por vistas) con barra de navegación inferior (*Bottom Navigation Bar*).
-- **Consumo de API:** Capa de servicios modulares (`api/auth.js`, `api/events.js`, `api/purchases.js`, `api/reviews.js`) con interceptores para inyección del token JWT.
+- **Tecnología Nativa Mobile:** React Native con Expo para ejecución nativa en iOS, Android y navegador web.
+- **Sistema de Diseño Oficial:** Identidad *Clean & Bright* con fondo blanco/gris sutil (`#f8fafc`), contrastes profundos (`#111827`) y el verde vibrante de la cátedra (`#55d233` / `#48bb18`), con el isotipo oficial del ticket perforado y slogan *"ENTRADAS A UN CLICK"*.
+- **Gestión de Estado:** React Context API para Autenticación (`AuthContext`) con almacenamiento nativo mediante `@react-native-async-storage/async-storage`.
+- **Navegación Móvil:** React Navigation (`@react-navigation/native-stack` y `@react-navigation/bottom-tabs`) e iconografía con `@expo/vector-icons`.
+- **Consumo de API:** Capa de servicios modulares (`api.js`, `authService.js`, etc.) con inyección automática del token JWT.
 
 ---
 
@@ -38,33 +39,34 @@ El plan cubre el 100% de los requerimientos técnicos y casos de uso especificad
 
 | # | Caso de Uso de la Consigna | Rol | Sprint Asignado |
 | :---: | :--- | :---: | :---: |
-| **CU-01** | Visualizar mis compras, su estado y días faltantes para el evento (confirmada) | Comprador | **Sprint 3** |
-| **CU-02** | Visualizar compras asociadas a un Evento, estado y cupo restante por tipo | Organizador | **Sprint 3** |
-| **CU-03** | Búsqueda textual y exploración de eventos por categorías | Comprador | **Sprint 2** |
-| **CU-04** | Crear Evento con múltiples tipos de entrada (precio y cupo) | Organizador | **Sprint 2** |
-| **CU-05** | Enviar mensajes dentro de una compra (chat) | Comprador | **Sprint 4** |
-| **CU-06** | Responder mensajes dentro de una compra (chat) | Organizador | **Sprint 4** |
-| **CU-07** | Cancelar compra y obtener reembolso si no puede asistir | Comprador | **Sprint 3** |
-| **CU-08** | Regla: cancelar compra si no está UTILIZADA y el evento no se realizó | Organizador / Negocio | **Sprint 3** |
-| **CU-09** | Puntuar numéricamente y dejar comentario a un evento cuya entrada fue UTILIZADA | Comprador | **Sprint 4** |
-| **CU-10** | Visualizar reseñas anteriores de cada organizador en sus eventos | Comprador | **Sprint 2 & 4** |
-| **CU-11** | Ordenar eventos por precio, fecha y puntaje del organizador | Comprador | **Sprint 2** |
-| **CU-12** | Realizar compra seleccionando tipo de entrada y cantidad respetando cupo disponible | Comprador | **Sprint 3** |
+| **CU-01** | Visualizar mis compras, su estado y días faltantes para el evento (confirmada) | Comprador | **Sprint 4** |
+| **CU-02** | Visualizar compras asociadas a un Evento, estado y cupo restante por tipo | Organizador | **Sprint 4** |
+| **CU-03** | Búsqueda textual y exploración de eventos por categorías | Comprador | **Sprint 3** |
+| **CU-04** | Crear Evento con múltiples tipos de entrada (precio y cupo) | Organizador | **Sprint 3** |
+| **CU-05** | Enviar mensajes dentro de una compra (chat) | Comprador | **Sprint 5** |
+| **CU-06** | Responder mensajes dentro de una compra (chat) | Organizador | **Sprint 5** |
+| **CU-07** | Cancelar compra y obtener reembolso si no puede asistir | Comprador | **Sprint 4** |
+| **CU-08** | Regla: cancelar compra si no está UTILIZADA y el evento no se realizó | Organizador / Negocio | **Sprint 4** |
+| **CU-09** | Puntuar numéricamente y dejar comentario a un evento cuya entrada fue UTILIZADA | Comprador | **Sprint 5** |
+| **CU-10** | Visualizar reseñas anteriores de cada organizador en sus eventos | Comprador | **Sprint 3 & 5** |
+| **CU-11** | Ordenar eventos por precio, fecha y puntaje del organizador | Comprador | **Sprint 3** |
+| **CU-12** | Realizar compra seleccionando tipo de entrada y cantidad respetando cupo disponible | Comprador | **Sprint 4** |
 
 ---
 
 ## 🚀 4. Detalle de los Sprints
 
 ```
-Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
-    └── Sprint 2: Gestión de Eventos, Búsqueda, Filtros & Catálogo
-          └── Sprint 3: Flujo de Compras, Control de Cupos & Estados
-                └── Sprint 4: Chat de Compra, Reseñas, Reputación & Cierre
+Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Completado ✅)
+    └── Sprint 2: Migración a React Native (Expo) & Sistema de Diseño UX/UI Oficial
+          └── Sprint 3: Gestión de Eventos, Búsqueda, Filtros & Catálogo
+                └── Sprint 4: Flujo de Compras, Control de Cupos & Estados
+                      └── Sprint 5: Chat de Compra, Reseñas, Reputación & Cierre
 ```
 
 ---
 
-### 🔹 Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
+### 🔹 Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend
 > **Objetivo:** Establecer la infraestructura del monorepo, el repositorio en memoria con semillas de prueba, los modelos del diagrama de dominio y el sistema completo de autenticación y autorización por roles.
 
 #### 1. Backend (`packages/backend`)
@@ -77,29 +79,55 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
   - `GET /api/auth/me`: Obtención de datos del usuario autenticado.
 - [x] Middleware `authMiddleware` para verificar token y `requireRole(['COMPRADOR', 'ORGANIZADOR'])`.
 - [x] Cargar datos semilla (*seeds*) con usuarios de prueba (ej: `comprador@demo.com`, `organizador@demo.com`) para pruebas inmediatas.
+- [x] Pruebas automatizadas: Suite con 24 tests unitarios y de integración con Jest y Supertest (100% aprobados).
 
-#### 2. Frontend (`packages/frontend`)
-- [x] Instalar dependencias necesarias (`react-router-dom`, iconos, utilitarios de fecha).
-- [x] Crear estructura base de diseño **Mobile-First** (contenedor con marco simulado para mobile, barra de estado superior).
-- [x] Implementar `AuthContext` y `useAuth`: almacenamiento de token y usuario en `localStorage`, manejo de login, registro y logout.
-- [x] Vistas de Frontend:
-  - `LoginView`: Formulario con opción de alternar entre credenciales rápidas de prueba.
-  - `RegisterView`: Formulario con selector de rol (*Comprador* / *Organizador*).
-  - Barra de navegación inferior (*Bottom Bar*) dinámica según el rol del usuario autenticado.
-
-#### 3. Ramas de Trabajo Sugeridas
-- `feature/backend-architecture-store`
-- `feature/auth-jwt-backend`
-- `feature/auth-ui-mobile-layout`
-
-#### 4. Criterios de Aceptación (DoD)
+#### 2. Criterios de Aceptación (DoD)
 - Un usuario puede registrarse e iniciar sesión como Comprador u Organizador.
 - Las rutas protegidas del backend rechazan solicitudes no autenticadas con código 401/403.
-- La interfaz visual móvil se adapta limpiamente en pantalla.
+- Base de datos en memoria completamente testeada y reproducible.
 
 ---
 
-### 🔹 Sprint 2: Gestión de Eventos, Búsqueda, Filtros & Catálogo
+### 🔹 Sprint 2: Migración a React Native (Expo) & Sistema de Diseño UX/UI Oficial
+> **Objetivo:** Cumplir al 100% con la consigna técnica migrando el módulo `packages/frontend` a React Native con Expo, aplicando la identidad visual oficial de la cátedra (logo verde de ticket perforado, paleta Clean & Bright, navegación nativa y pantallas de Auth).
+
+#### 1. Setup Técnico de React Native (`packages/frontend`)
+- [ ] Configurar proyecto Expo compatible con el monorepo y scripts npm (`npm start`, `npm run android`, `npm run ios`, `npm run web`).
+- [ ] Instalar dependencias nativas:
+  - `@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`.
+  - `@react-native-async-storage/async-storage` para persistencia nativa del token y sesión.
+  - `@expo/vector-icons` y soporte para assets de imágenes.
+- [ ] Configurar capa de red (`services/api.js`) adaptada a dispositivos móviles físicos (soporte para IP local / emulador).
+
+#### 2. Sistema de Diseño UX/UI Oficial
+- [ ] Incorporar el logo oficial propuesto por la cátedra (`assets/logo_catedra.png`).
+- [ ] Definir tokens de diseño:
+  - Primario: Verde vibrante Ticket It (`#55d233` / `#48bb18`).
+  - Fondos: Blanco limpio (`#ffffff`) y gris suave (`#f8fafc`).
+  - Textos y contrastes: Carbón oscuro (`#111827`) y gris neutro (`#64748b`).
+  - Acentos Comprador (celeste `#0284c7`) y Organizador (ámbar `#f59e0b`).
+- [ ] Componentes UI nativos reutilizables: `Button`, `Input`, `RoleSelectorCard`, `Badge`, `Card`.
+
+#### 3. Pantallas Nativas
+- [ ] `LoginScreen`: Formulario nativo con accesos rápidos para `comprador@demo.com` y `organizador@demo.com`.
+- [ ] `RegisterScreen`: Formulario nativo con selector visual de rol (**Comprador** vs **Organizador**).
+- [ ] `HomeScreen`: Dashboard con saludo, badge de rol y resumen del sistema.
+- [ ] `ProfileScreen`: Datos de cuenta, ID y botón nativo para cerrar sesión.
+- [ ] `BottomTabNavigator`: Barra de navegación nativa inferior que adapta sus pestañas según el rol.
+
+#### 4. Ramas de Trabajo Sugeridas
+- `feature/expo-react-native-setup`
+- `feature/ux-ui-design-system`
+- `feature/rn-auth-screens`
+
+#### 5. Criterios de Aceptación (DoD)
+- La aplicación corre en Expo Go y emulador/navegador web.
+- El usuario puede registrarse e iniciar sesión de forma fluida y persistente.
+- La identidad visual utiliza el logo oficial de la cátedra y su paleta de colores.
+
+---
+
+### 🔹 Sprint 3: Gestión de Eventos, Búsqueda, Filtros & Catálogo
 > **Objetivo:** Permitir a los organizadores publicar eventos con entradas segmentadas y a los compradores explorar, filtrar, buscar y ordenar el catálogo. Cubre **CU-03, CU-04, CU-11 y parte de CU-10**.
 
 #### 1. Backend (`packages/backend`)
@@ -117,20 +145,19 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
   - `GET /api/eventos/:id`: Detalle completo del evento, tipos de entrada disponibles, datos del organizador y su puntaje promedio (**CU-10**).
   - `GET /api/organizadores/:id/eventos`: Eventos propios creados por el organizador.
 
-#### 2. Frontend (`packages/frontend`)
-- [ ] Componente `EventCard` con información de fecha, categoría, precio desde, cupos y puntaje del organizador.
-- [ ] Vista `ExploreView` (Comprador):
-  - Barra de búsqueda de texto en tiempo real (**CU-03**).
-  - Selector deslizante horizontal de categorías (**CU-03**).
-  - Modal o menú desplegable de ordenamiento (precio ascendente/descendente, fecha más próxima, reputación del organizador) (**CU-11**).
-- [ ] Vista `EventDetailView`:
-  - Carrousel de imágenes multimedia.
-  - Descripción, fecha y horario.
-  - Desglose de tipos de entrada con precios y disponibilidad en tiempo real.
-  - Sección de información del Organizador y su puntaje histórico.
-- [ ] Vista `CreateEventView` (Organizador):
-  - Formulario reactivo para título, descripción, fecha, categoría e imágenes.
-  - Componente dinámico para agregar múltiples tipos de entrada (ej: *General*, *Platea*, *VIP*) indicando precio y cupo para cada uno (**CU-04**).
+#### 2. Frontend Nativo (`packages/frontend`)
+- [ ] Componente `EventCard` nativo con fecha, categoría, precio, cupos y puntaje del organizador.
+- [ ] Pantalla `ExploreScreen` (Comprador):
+  - Barra de búsqueda de texto nativa (**CU-03**).
+  - Selector horizontal deslizable de categorías (**CU-03**).
+  - Modal de ordenamiento (precio, fecha, puntaje) (**CU-11**).
+- [ ] Pantalla `EventDetailScreen`:
+  - Galería/carrusel de imágenes multimedia.
+  - Descripción, fecha y desglose de tipos de entrada con cupos disponibles.
+  - Sección del Organizador y su puntaje histórico (**CU-10**).
+- [ ] Pantalla `CreateEventScreen` (Organizador):
+  - Formulario nativo con título, descripción, fecha, categoría e imágenes.
+  - Componente dinámico para agregar múltiples tipos de entrada con precio y cupo (**CU-04**).
 
 #### 3. Ramas de Trabajo Sugeridas
 - `feature/events-domain-endpoints`
@@ -138,13 +165,12 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
 - `feature/create-event-organizer-ui`
 
 #### 4. Criterios de Aceptación (DoD)
-- El organizador puede publicar un evento con al menos dos tipos de entrada distintos.
-- El comprador puede encontrar eventos buscando por palabras clave y filtrando por categorías.
-- El ordenamiento por precio, fecha y puntaje altera correctamente la lista visual.
+- El organizador puede publicar un evento con múltiples tipos de entrada.
+- El comprador puede buscar por texto, filtrar por categoría y ordenar el catálogo.
 
 ---
 
-### 🔹 Sprint 3: Flujo de Compras, Control de Cupos & Estados
+### 🔹 Sprint 4: Flujo de Compras, Control de Cupos & Estados
 > **Objetivo:** Implementar la adquisición de entradas, validación estricta de cupos, máquinas de estados de compra y panel de seguimiento para compradores y organizadores. Cubre **CU-01, CU-02, CU-07, CU-08 y CU-12**.
 
 #### 1. Backend (`packages/backend`)
@@ -155,29 +181,24 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
 - [ ] Endpoints de Compras:
   - `POST /api/compras`: Realizar compra (**CU-12**):
     - Validar disponibilidad: `tipoEntrada.hayCupoPara(cantidad)`.
-    - Decrementar cupo disponible y registrar compra en estado `CONFIRMADA` (o `PENDIENTE` según flujo).
+    - Decrementar cupo disponible y registrar compra en estado `CONFIRMADA`.
   - `GET /api/compras/mis-compras`: Compras del comprador logueado (**CU-01**):
-    - Incluir cálculo dinámico de `diasFaltantes` hasta la fecha del evento para compras en estado `CONFIRMADA`.
-  - `GET /api/eventos/:id/compras`: Compras del evento (solo organizador dueño) con estados y cupos restantes por tipo de entrada (**CU-02**).
+    - Cálculo dinámico de `diasFaltantes` hasta la fecha del evento para compras confirmadas.
+  - `GET /api/eventos/:id/compras`: Compras del evento (solo organizador dueño) con estados y cupos restantes (**CU-02**).
   - `POST /api/compras/:id/cancelar`: Cancelación y reembolso de compra (**CU-07**, **CU-08**):
-    - Regla de negocio: Permitido solo si el estado **no es** `UTILIZADA` y la fecha del evento aún **no ha pasado**.
-    - Transición a estado `REEMBOLSADA` / `CANCELADA` y restauración automática del cupo en el `TipoEntrada`.
-  - `PATCH /api/compras/:id/utilizar`: Endpoint para marcar entrada como `UTILIZADA` (simulando acreditación al ingresar al evento).
+    - Permitido solo si no está `UTILIZADA` y el evento no se realizó. Reintegración automática del cupo.
+  - `PATCH /api/compras/:id/utilizar`: Marcar entrada como `UTILIZADA`.
 
-#### 2. Frontend (`packages/frontend`)
-- [ ] Modal / Flujo de Compra en `EventDetailView`:
-  - Selector de tipo de entrada con indicador de cupo máximo.
-  - Contador de cantidad deseada con validación instantánea para no exceder cupo (**CU-12**).
-  - Resumen de compra (subtotal, total) y botón de confirmación.
-- [ ] Vista `MyPurchasesView` (Comprador) (**CU-01**):
-  - Tarjetas de compras agrupadas o etiquetadas por estado (`CONFIRMADA`, `PENDIENTE`, `UTILIZADA`, `REEMBOLSADA`, `CANCELADA`) con chips de colores distintivos.
-  - Badge destacado para compras confirmadas: *"Faltan X días para el evento"*.
-  - Botón *"Cancelar compra y solicitar reembolso"* con confirmación modal y deshabilitado si ya fue utilizada o expiró (**CU-07**, **CU-08**).
-- [ ] Vista `OrganizerDashboardView` (Organizador) (**CU-02**):
-  - Vista general de eventos del organizador.
-  - Detalle por evento: barras de progreso de cupos vendidos vs. disponibles por cada tipo de entrada.
-  - Tabla / Lista de compradores y estados de sus entradas.
-  - Botón de acción para simular uso de entrada (*"Marcar como Utilizada"*).
+#### 2. Frontend Nativo (`packages/frontend`)
+- [ ] Modal de Compra en `EventDetailScreen`:
+  - Selector de tipo de entrada, contador de cantidad y validación en tiempo real (**CU-12**).
+- [ ] Pantalla `MyPurchasesScreen` (Comprador) (**CU-01**):
+  - Tarjetas de compras por estado (`CONFIRMADA`, `UTILIZADA`, `REEMBOLSADA`, `CANCELADA`).
+  - Badge destacado: *"Faltan X días para el evento"*.
+  - Botón *"Cancelar compra y solicitar reembolso"* (**CU-07**, **CU-08**).
+- [ ] Pantalla `OrganizerDashboardScreen` (Organizador) (**CU-02**):
+  - Seguimiento de cupos vendidos vs disponibles por tipo de entrada.
+  - Lista de compradores y botón para marcar entrada como `UTILIZADA`.
 
 #### 3. Ramas de Trabajo Sugeridas
 - `feature/purchase-logic-concurrency-store`
@@ -185,13 +206,13 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
 - `feature/organizer-event-purchases-ui`
 
 #### 4. Criterios de Aceptación (DoD)
-- No es posible comprar más entradas que las disponibles en el cupo.
-- Las compras canceladas reintegran el cupo al evento de forma inmediata en memoria.
-- El cálculo de días faltantes es preciso y las compras utilizadas no permiten cancelación.
+- No es posible sobrepasar el cupo disponible.
+- Las cancelaciones restauran el cupo disponible automáticamente.
+- El cálculo de días faltantes es preciso y la UI responde al instante.
 
 ---
 
-### 🔹 Sprint 4: Chat de Compra, Reseñas, Reputación & Cierre
+### 🔹 Sprint 5: Chat de Compra, Reseñas, Reputación & Cierre
 > **Objetivo:** Añadir el canal de mensajería dentro de cada compra, el sistema de calificaciones y comentarios post-evento, el cálculo de reputación del organizador y pruebas integrales. Cubre **CU-05, CU-06, CU-09 y CU-10**.
 
 #### 1. Backend (`packages/backend`)
@@ -199,24 +220,19 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
   - `Mensaje` (id, compraId, usuarioId, mensaje, enviado).
   - `Resenia` (id, compradorId, eventoId, detalle, puntuacion [1.0 a 5.0], fecha).
 - [ ] Endpoints de Chat en Compras:
-  - `GET /api/compras/:id/mensajes`: Historial de mensajes de una compra (accesible solo por el comprador o el organizador del evento).
+  - `GET /api/compras/:id/mensajes`: Historial de mensajes de una compra.
   - `POST /api/compras/:id/mensajes`: Enviar mensaje (**CU-05**, **CU-06**).
 - [ ] Endpoints de Reseñas:
-  - `POST /api/eventos/:id/resenias`: Crear reseña (**CU-09**):
-    - Regla de validación: El usuario debe tener una compra asociada en estado `UTILIZADA` para este evento.
-  - `GET /api/organizadores/:id/resenias`: Obtener todas las reseñas históricas del organizador con cálculo de promedio de reputación (**CU-10**).
+  - `POST /api/eventos/:id/resenias`: Crear reseña solo para compras `UTILIZADA` (**CU-09**).
+  - `GET /api/organizadores/:id/resenias`: Historial de reseñas y promedio de reputación (**CU-10**).
 
-#### 2. Frontend (`packages/frontend`)
-- [ ] Componente `PurchaseChatModal` / `ChatView`:
-  - Vista de conversación tipo mensajería móvil dentro del detalle de una compra.
-  - Globos de chat diferenciados entre Comprador y Organizador con fecha y hora.
-  - Campo de entrada de texto con envío instantáneo.
-- [ ] Modal de Calificación y Reseña (`ReviewModal`):
-  - Habilitado automáticamente en `MyPurchasesView` al detectar una compra en estado `UTILIZADA` (**CU-09**).
-  - Selector de estrellas (1 a 5) y área de texto para el comentario.
-- [ ] Sección de Reputación en `EventDetailView`:
-  - Visualización del promedio de estrellas del organizador y lista de comentarios de eventos previos (**CU-10**).
-- [ ] Pulido integral de estilos, navegación fluida, toasts de confirmación y carga de datos semilla completos para demostración técnica.
+#### 2. Frontend Nativo (`packages/frontend`)
+- [ ] Pantalla de Chat dentro de la Compra (`ChatScreen`):
+  - Mensajería interactiva entre comprador y organizador (**CU-05**, **CU-06**).
+- [ ] Modal de Calificación (`ReviewModal`):
+  - Estrellas (1 a 5) y comentario habilitado solo tras usar la entrada (**CU-09**).
+- [ ] Visualización de Reputación en Detalle del Evento (**CU-10**).
+- [ ] Pulido final, carga de datos semilla completos y preparación para entrega.
 
 #### 3. Ramas de Trabajo Sugeridas
 - `feature/chat-purchases`
@@ -224,20 +240,21 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
 - `feature/hardening-polish-seeds`
 
 #### 4. Criterios de Aceptación (DoD)
-- Comprador y organizador pueden intercambiar mensajes dentro de la compra.
-- Solo las compras con estado `UTILIZADA` permiten puntuar y comentar.
-- Las reseñas alimentan el promedio de puntaje del organizador visible en el catálogo.
+- Comprador y organizador pueden intercambiar mensajes en la compra.
+- Solo entradas `UTILIZADA` permiten reseñar.
+- Aplicación completa lista para la grabación de la entrega técnica.
 
 ---
 
-## 📅 5. Cronograma y Distribución Temporal Sugerida
+## 📅 5. Cronograma y Distribución Temporal
 
-| Sprint | Enfoque Principal | Hito Entregable |
-| :---: | :--- | :--- |
-| **Sprint 1** | Setup, In-Memory Store, Modelos Core & Auth JWT | Login/Registro operativo y navegación mobile base |
-| **Sprint 2** | Eventos, Categorías, Búsqueda y Filtros de Catálogo | Publicación y exploración de eventos funcional |
-| **Sprint 3** | Compras, Cupos, Estados y Cancelaciones/Reembolsos | Flujo transaccional completo y control de cupos |
-| **Sprint 4** | Chat en compras, Calificaciones, Reputación y QA | Aplicación lista para presentación técnica |
+| Sprint | Enfoque Principal | Hito Entregable | Estado |
+| :---: | :--- | :--- | :---: |
+| **Sprint 1** | Setup, In-Memory Store, Modelos Core & Auth JWT | Backend completo, JWT y persistencia testeada | **Completado ✅** |
+| **Sprint 2** | Migración a React Native (Expo) & UI/UX Oficial | App nativa con logo y colores oficiales de la cátedra | **En Curso 🚀** |
+| **Sprint 3** | Eventos, Categorías, Búsqueda y Filtros de Catálogo | Publicación y exploración de eventos funcional | Pendiente |
+| **Sprint 4** | Compras, Cupos, Estados y Cancelaciones/Reembolsos | Flujo transaccional completo y control de cupos | Pendiente |
+| **Sprint 5** | Chat en compras, Calificaciones, Reputación y QA | Aplicación lista para presentación técnica | Pendiente |
 
 ---
 
@@ -245,6 +262,6 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación
 
 Siguiendo las pautas pedagógicas del trabajo práctico, se registrará el uso de herramientas de Inteligencia Artificial para la posterior reflexión crítica en la entrega:
 1. **Modelado y Arquitectura:** Asistencia en la definición de contratos de API REST, estructuras en memoria y validaciones de negocio.
-2. **Generación de Código:** Aceleración en boilerplate de controladores Express, hooks de React y estilos CSS mobile-first.
-3. **Depuración y Casos de Borde:** Consulta de resolución para concurrencia en memoria, control de estados inválidos y ordenamientos combinados.
-4. **Bitácora de IA:** Anotación de aciertos (ganancia de tiempo, diseño limpio) y fricciones (alucinaciones de dependencias, adaptaciones de código) para la conclusión final.
+2. **Generación de Código:** Aceleración en boilerplate de controladores Express, hooks de React Native y estilos visuales oficiales.
+3. **Depuración y Casos de Borde:** Consulta de resolución para concurrencia en memoria, control de estados inválidos y adaptación multiplataforma Expo.
+4. **Bitácora de IA:** Anotación de aciertos (ganancia de tiempo, diseño limpio) y fricciones (adaptaciones de librerías, dependencias nativas) para la conclusión final.

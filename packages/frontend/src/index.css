@@ -1,13 +1,225 @@
-body {
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', var(--font-sans);
+
+  /* Paleta cromática principal */
+  --bg-app: #090d16;
+  --bg-surface: rgba(18, 24, 38, 0.85);
+  --bg-card: rgba(30, 41, 59, 0.65);
+  --bg-card-hover: rgba(51, 65, 85, 0.75);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(99, 102, 241, 0.6);
+
+  /* Acentos */
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-glow: rgba(99, 102, 241, 0.35);
+
+  --comprador-color: #38bdf8;
+  --comprador-bg: rgba(56, 189, 248, 0.15);
+
+  --organizador-color: #fb923c;
+  --organizador-bg: rgba(251, 146, 60, 0.15);
+
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.15);
+
+  --danger: #f43f5e;
+  --danger-bg: rgba(244, 63, 94, 0.15);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 25px var(--primary-glow);
+}
+
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #030712;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+/* Envoltorio principal para simular dispositivo móvil */
+.mobile-canvas-wrapper {
+  width: 100%;
+  max-width: 440px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+@media (min-width: 500px) {
+  .mobile-canvas-wrapper {
+    height: 92vh;
+    max-height: 860px;
+  }
+}
+
+.mobile-device-shell {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-app);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  border: 4px solid #1e293b;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.1);
+}
+
+@media (max-width: 499px) {
+  .mobile-canvas-wrapper {
+    padding: 0;
+    height: 100vh;
+  }
+  .mobile-device-shell {
+    border: none;
+    border-radius: 0;
+    height: 100vh;
+  }
+}
+
+/* Barra superior de estado (Notch, reloj, batería) */
+.mobile-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 22px 6px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  z-index: 20;
+  background: rgba(9, 13, 22, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.status-notch {
+  width: 90px;
+  height: 18px;
+  background: #020617;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.notch-speaker {
+  width: 32px;
+  height: 4px;
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.notch-camera {
+  width: 7px;
+  height: 7px;
+  background: #0f172a;
+  border-radius: 50%;
+  border: 1px solid #334155;
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Área de contenido scrollable */
+.mobile-content-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 18px 24px 18px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.mobile-content-area::-webkit-scrollbar {
+  width: 4px;
+}
+.mobile-content-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Barra de navegación inferior móvil */
+.mobile-bottom-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-color);
+  z-index: 20;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+  color: var(--text-subtle);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.bottom-nav-item:hover {
+  color: var(--text-main);
+}
+
+/* Indicador home inferior */
+.mobile-home-indicator {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 8px 0;
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.home-bar {
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+/* Vistas y contenedores */
+.view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }

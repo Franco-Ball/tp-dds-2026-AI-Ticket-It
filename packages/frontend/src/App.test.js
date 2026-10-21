@@ -1,9 +1,11 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test("renders learn react link", () => {
+test("renderiza la pantalla de inicio de sesión de AI Ticket It por defecto", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const titleElements = screen.getAllByText(/AI Ticket It/i);
+  expect(titleElements.length).toBeGreaterThan(0);
+  expect(screen.getByRole("heading", { name: /Iniciar Sesión/i })).toBeInTheDocument();
+  expect(screen.getByText(/Credenciales rápidas de prueba/i)).toBeInTheDocument();
 });

@@ -14,5 +14,9 @@ export default defineConfig([
     files: ["packages/frontend/src/**/*.{js,jsx,mjs,cjs}"],
     ...pluginReact.configs.flat.recommended,
     settings: { react: { version: "detect" } },
+    rules: {
+      ...pluginReact.configs.flat.recommended.rules,
+      "react/prop-types": "off",
+    },
   },
 ]);

@@ -5,24 +5,23 @@ import { useAuth } from "../context/AuthContext";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
+import ConfirmModal from "../components/ui/ConfirmModal";
 import { colors, borderRadius, spacing } from "../theme/theme";
 
 export default function ProfileScreen() {
   const { user, isOrganizador, logout } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
-    if (Platform.OS === "web") {
-      if (window.confirm("¿Estás seguro de que deseas cerrar tu sesión?")) {
-        logout();
-      }
-    } else {
-      Alert.alert("Cerrar Sesión", "¿Estás seguro de que deseas cerrar tu sesión?", [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Cerrar Sesión", style: "destructive", onPress: logout },
-      ]);
-    }
+    setShowLogoutModal(true);
   };
+
+  const handleConfirmLogout = () => {
+    setShowLogoutModal(false);
+    logout();
+  };
+
 
   const initials = `${user?.nombre?.[0] || ""}${user?.apellido?.[0] || ""}`.toUpperCase();
 
@@ -103,9 +102,23 @@ export default function ProfileScreen() {
         onPress={handleLogout}
         style={styles.logoutBtn}
       />
+
+      {/* Modal Personalizado de Confirmación */}
+      <ConfirmModal
+        visible={showLogoutModal}
+        title="¿Cerrar Sesión?"
+        message="¿Estás seguro de que deseas salir? Tendrás que volver a ingresar tus credenciales para acceder."
+        confirmText="Cerrar Sesión"
+        cancelText="Cancelar"
+        isDanger
+        icon={<Feather name="log-out" size={26} color={colors.error} />}
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setShowLogoutModal(false)}
+      />
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -114,7 +127,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.md,
+    maxWidth: 600,
+    width: "100%",
+    alignSelf: "center",
   },
+
   header: {
     alignItems: "center",
     marginVertical: 18,

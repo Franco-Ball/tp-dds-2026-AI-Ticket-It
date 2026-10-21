@@ -111,7 +111,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.md,
+    maxWidth: 600,
+    width: "100%",
+    alignSelf: "center",
   },
+
   heroCard: {
     backgroundColor: colors.surface,
     borderColor: colors.border,

@@ -6,7 +6,7 @@ import AppNavigator from "./navigation/AppNavigator";
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={styles.container}>
       <AuthProvider>
         <StatusBar style="dark" />
         <AppNavigator />
@@ -14,3 +14,12 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+const styles = {
+  container: {
+    flex: 1,
+    height: "100%",
+    width: "100%",
+  },
+};
+

@@ -48,13 +48,15 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={styles.keyboardContainer}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
+
         {/* Logo Oficial de la Cátedra */}
         <HeaderLogo size={120} />
 
@@ -144,13 +146,19 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
+    height: "100%",
     backgroundColor: colors.background,
   },
   scrollContent: {
+    flexGrow: 1,
     padding: spacing.md,
     paddingTop: Platform.OS === "android" ? spacing.xl : spacing.md,
     justifyContent: "center",
+    maxWidth: 460,
+    width: "100%",
+    alignSelf: "center",
   },
+
   card: {
     padding: 22,
   },

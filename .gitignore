@@ -1,4 +1,9 @@
 node_modules/
 /packages/**/node_modules/
-/packages/**/node_modules/
 .env
+.expo/
+packages/frontend/.expo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

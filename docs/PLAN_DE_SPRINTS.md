@@ -92,28 +92,28 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 > **Objetivo:** Cumplir al 100% con la consigna técnica migrando el módulo `packages/frontend` a React Native con Expo, aplicando la identidad visual oficial de la cátedra (logo verde de ticket perforado, paleta Clean & Bright, navegación nativa y pantallas de Auth).
 
 #### 1. Setup Técnico de React Native (`packages/frontend`)
-- [ ] Configurar proyecto Expo compatible con el monorepo y scripts npm (`npm start`, `npm run android`, `npm run ios`, `npm run web`).
-- [ ] Instalar dependencias nativas:
+- [x] Configurar proyecto Expo compatible con el monorepo y scripts npm (`npm start`, `npm run android`, `npm run ios`, `npm run web`).
+- [x] Instalar dependencias nativas:
   - `@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`.
   - `@react-native-async-storage/async-storage` para persistencia nativa del token y sesión.
   - `@expo/vector-icons` y soporte para assets de imágenes.
-- [ ] Configurar capa de red (`services/api.js`) adaptada a dispositivos móviles físicos (soporte para IP local / emulador).
+- [x] Configurar capa de red (`services/api.js`) adaptada a dispositivos móviles físicos (soporte para IP local / emulador).
 
 #### 2. Sistema de Diseño UX/UI Oficial
-- [ ] Incorporar el logo oficial propuesto por la cátedra (`assets/logo_catedra.png`).
-- [ ] Definir tokens de diseño:
+- [x] Incorporar el logo oficial propuesto por la cátedra (`assets/logo_catedra.png`).
+- [x] Definir tokens de diseño:
   - Primario: Verde vibrante Ticket It (`#55d233` / `#48bb18`).
   - Fondos: Blanco limpio (`#ffffff`) y gris suave (`#f8fafc`).
   - Textos y contrastes: Carbón oscuro (`#111827`) y gris neutro (`#64748b`).
   - Acentos Comprador (celeste `#0284c7`) y Organizador (ámbar `#f59e0b`).
-- [ ] Componentes UI nativos reutilizables: `Button`, `Input`, `RoleSelectorCard`, `Badge`, `Card`.
+- [x] Componentes UI nativos reutilizables: `Button`, `Input`, `RoleSelectorCard`, `Badge`, `Card`.
 
 #### 3. Pantallas Nativas
-- [ ] `LoginScreen`: Formulario nativo con accesos rápidos para `comprador@demo.com` y `organizador@demo.com`.
-- [ ] `RegisterScreen`: Formulario nativo con selector visual de rol (**Comprador** vs **Organizador**).
-- [ ] `HomeScreen`: Dashboard con saludo, badge de rol y resumen del sistema.
-- [ ] `ProfileScreen`: Datos de cuenta, ID y botón nativo para cerrar sesión.
-- [ ] `BottomTabNavigator`: Barra de navegación nativa inferior que adapta sus pestañas según el rol.
+- [x] `LoginScreen`: Formulario nativo con accesos rápidos para `comprador@demo.com` y `organizador@demo.com`.
+- [x] `RegisterScreen`: Formulario nativo con selector visual de rol (**Comprador** vs **Organizador**).
+- [x] `HomeScreen`: Dashboard con saludo, badge de rol y resumen del sistema.
+- [x] `ProfileScreen`: Datos de cuenta, ID y botón nativo para cerrar sesión.
+- [x] `BottomTabNavigator`: Barra de navegación nativa inferior que adapta sus pestañas según el rol.
 
 #### 4. Ramas de Trabajo Sugeridas
 - `feature/expo-react-native-setup`
@@ -251,7 +251,7 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 | Sprint | Enfoque Principal | Hito Entregable | Estado |
 | :---: | :--- | :--- | :---: |
 | **Sprint 1** | Setup, In-Memory Store, Modelos Core & Auth JWT | Backend completo, JWT y persistencia testeada | **Completado ✅** |
-| **Sprint 2** | Migración a React Native (Expo) & UI/UX Oficial | App nativa con logo y colores oficiales de la cátedra | **En Curso 🚀** |
+| **Sprint 2** | Migración a React Native (Expo) & UI/UX Oficial | App nativa con logo y colores oficiales de la cátedra | **Completado ✅** |
 | **Sprint 3** | Eventos, Categorías, Búsqueda y Filtros de Catálogo | Publicación y exploración de eventos funcional | Pendiente |
 | **Sprint 4** | Compras, Cupos, Estados y Cancelaciones/Reembolsos | Flujo transaccional completo y control de cupos | Pendiente |
 | **Sprint 5** | Chat en compras, Calificaciones, Reputación y QA | Aplicación lista para presentación técnica | Pendiente |

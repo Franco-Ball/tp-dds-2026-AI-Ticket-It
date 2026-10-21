@@ -1,8 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../config/constants";
 
 export async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  const token = localStorage.getItem("token");
+  const token = await AsyncStorage.getItem("token").catch(() => null);
 
   const headers = {
     "Content-Type": "application/json",

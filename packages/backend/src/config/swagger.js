@@ -51,6 +51,14 @@ Para probar endpoints protegidos, iniciá sesión en \`/api/auth/login\`, copiá
       name: "Compras",
       description: "Circuito de compra, reserva de cupos por 15 min, pagos, seguimiento y reembolsos (CU-01, CU-02, CU-07, CU-08, CU-12)",
     },
+    {
+      name: "Chat",
+      description: "Espacio de comunicación bidireccional entre comprador y organizador dentro de una compra (CU-05, CU-06)",
+    },
+    {
+      name: "Reseñas",
+      description: "Calificaciones de eventos asistidos y cálculo de reputación del organizador (CU-09, CU-10)",
+    },
   ],
   components: {
     securitySchemes: {
@@ -284,6 +292,91 @@ Para probar endpoints protegidos, iniciá sesión en \`/api/auth/login\`, copiá
           compras: {
             type: "array",
             items: { $ref: "#/components/schemas/Compra" },
+          },
+        },
+      },
+      Mensaje: {
+        type: "object",
+        properties: {
+          id: { type: "string", example: "msg-1" },
+          compraId: { type: "string", example: "comp-1" },
+          usuarioId: { type: "string", example: "user-1" },
+          mensaje: { type: "string", example: "¿A qué hora se habilita el acceso general?" },
+          fechaEnvio: { type: "string", format: "date-time" },
+          remitente: {
+            type: "object",
+            properties: {
+              id: { type: "string", example: "user-1" },
+              nombre: { type: "string", example: "Carlos" },
+              apellido: { type: "string", example: "Comprador" },
+              rol: { type: "string", enum: ["COMPRADOR", "ORGANIZADOR"], example: "COMPRADOR" },
+            },
+          },
+        },
+      },
+      EnviarMensajeRequest: {
+        type: "object",
+        required: ["mensaje"],
+        properties: {
+          mensaje: {
+            type: "string",
+            minLength: 1,
+            maxLength: 1000,
+            example: "¿A qué hora se habilita el acceso general?",
+          },
+        },
+      },
+      Resenia: {
+        type: "object",
+        properties: {
+          id: { type: "string", example: "rev-1" },
+          compradorId: { type: "string", example: "user-1" },
+          eventoId: { type: "string", example: "event-1" },
+          organizadorId: { type: "string", example: "user-2" },
+          puntuacion: { type: "number", minimum: 1, maximum: 5, example: 4.8 },
+          detalle: { type: "string", example: "Excelente acústica e iluminación. El ingreso fue ágil y muy bien señalizado." },
+          fecha: { type: "string", format: "date-time" },
+          comprador: {
+            type: "object",
+            properties: {
+              id: { type: "string", example: "user-1" },
+              nombre: { type: "string", example: "Carlos" },
+              apellido: { type: "string", example: "Comprador" },
+            },
+          },
+          nombreEvento: { type: "string", example: "Festival Rock Nacional 2025" },
+        },
+      },
+      CrearReseniaRequest: {
+        type: "object",
+        required: ["puntuacion", "detalle"],
+        properties: {
+          puntuacion: {
+            type: "number",
+            minimum: 1,
+            maximum: 5,
+            example: 4.8,
+            description: "Calificación numérica del 1.0 al 5.0 (un decimal)",
+          },
+          detalle: {
+            type: "string",
+            minLength: 1,
+            maxLength: 1000,
+            example: "Excelente producción y organización general.",
+            description: "Comentario descriptivo de la experiencia",
+          },
+        },
+      },
+      ReputacionOrganizadorResponse: {
+        type: "object",
+        properties: {
+          organizadorId: { type: "string", example: "user-2" },
+          nombreOrganizador: { type: "string", example: "Olga Organizadora" },
+          reputacion: { type: "number", nullable: true, example: 4.8 },
+          totalResenias: { type: "integer", example: 1 },
+          resenias: {
+            type: "array",
+            items: { $ref: "#/components/schemas/Resenia" },
           },
         },
       },
@@ -776,6 +869,173 @@ Para probar endpoints protegidos, iniciá sesión en \`/api/auth/login\`, copiá
           403: respuestaError("Permisos insuficientes para realizar esta transición"),
           404: respuestaError("Compra no encontrada"),
           422: respuestaError("No es posible cancelar una compra ya UTILIZADA o cuyo evento ya se realizó"),
+        },
+      },
+    },
+    // --- CHAT EN COMPRAS (CU-05, CU-06) ---
+    "/compras/{id}/mensajes": {
+      get: {
+        tags: ["Chat", "Compras"],
+        summary: "Obtener historial del chat de una compra (CU-05, CU-06)",
+        description: "Permite al comprador titular y al organizador del evento consultar los mensajes intercambiados.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            example: "comp-1",
+          },
+        ],
+        responses: {
+          200: {
+            description: "Historial de mensajes ordenado cronológicamente con datos del remitente",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: { $ref: "#/components/schemas/Mensaje" },
+                },
+              },
+            },
+          },
+          401: respuestaError("No autenticado"),
+          403: respuestaError("No tienes permiso para ver el chat de esta compra"),
+          404: respuestaError("Compra no encontrada"),
+        },
+      },
+      post: {
+        tags: ["Chat", "Compras"],
+        summary: "Enviar un mensaje en el chat de la compra (CU-05, CU-06)",
+        description: "Permite enviar consultas o respuestas mientras la compra esté activa (PENDIENTE, CONFIRMADA o UTILIZADA).",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            example: "comp-1",
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/EnviarMensajeRequest" },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: "Mensaje enviado exitosamente",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Mensaje" },
+              },
+            },
+          },
+          401: respuestaError("No autenticado"),
+          403: respuestaError("No tienes permiso para participar en el chat de esta compra"),
+          404: respuestaError("Compra no encontrada"),
+          422: respuestaError("No es posible enviar mensajes en una compra cancelada o reembolsada"),
+        },
+      },
+    },
+    // --- RESEÑAS Y REPUTACIÓN (CU-09, CU-10) ---
+    "/eventos/{id}/resenias": {
+      get: {
+        tags: ["Reseñas", "Eventos"],
+        summary: "Listar reseñas de un evento específico (CU-09)",
+        description: "Devuelve las reseñas realizadas por asistentes con sus calificaciones y comentarios.",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            example: "event-1",
+          },
+        ],
+        responses: {
+          200: {
+            description: "Lista de reseñas públicas del evento",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: { $ref: "#/components/schemas/Resenia" },
+                },
+              },
+            },
+          },
+          404: respuestaError("Evento no encontrado"),
+        },
+      },
+      post: {
+        tags: ["Reseñas", "Eventos"],
+        summary: "Calificar un evento con puntuación (1.0-5.0) y comentario (CU-09)",
+        description: "Solo permitido para compradores con al menos una entrada en estado UTILIZADA para este evento. Se garantiza la unicidad (una reseña por comprador por evento).",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            example: "event-1",
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/CrearReseniaRequest" },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: "Reseña registrada exitosamente y reputación del organizador actualizada",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Resenia" },
+              },
+            },
+          },
+          401: respuestaError("No autenticado"),
+          403: respuestaError("Solo compradores pueden emitir reseñas"),
+          404: respuestaError("Evento no encontrado"),
+          409: respuestaError("Ya has emitido una reseña para este evento"),
+          422: respuestaError("Solo puedes calificar si posees una entrada en estado UTILIZADA"),
+        },
+      },
+    },
+    "/organizadores/{id}/resenias": {
+      get: {
+        tags: ["Reseñas", "Organizadores"],
+        summary: "Historial de reseñas y reputación acumulada del organizador (CU-10)",
+        description: "Devuelve el puntaje promedio consolidado y el listado de reseñas de todos sus eventos.",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            example: "user-2",
+          },
+        ],
+        responses: {
+          200: {
+            description: "Reputación promedio y detalle de reseñas anteriores",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ReputacionOrganizadorResponse" },
+              },
+            },
+          },
+          404: respuestaError("Organizador no encontrado"),
         },
       },
     },

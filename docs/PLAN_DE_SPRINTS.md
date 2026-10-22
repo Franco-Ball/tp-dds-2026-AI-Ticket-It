@@ -133,18 +133,18 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 > **Objetivo:** Implementar la lógica completa de dominio y endpoints REST para la publicación de eventos con entradas segmentadas, búsqueda y filtros de catálogo, y el circuito transaccional de compras con validación estricta de cupos, máquinas de estados y cancelaciones. Cubre **CU-01, CU-02, CU-03, CU-04, CU-07, CU-08, CU-11 y CU-12**.
 
 #### 1. Backend (`packages/backend`)
-- [ ] Implementar modelos de dominio:
+- [x] Implementar modelos de dominio:
   - `Categoria` (id, nombre, descripcion).
   - `TipoEntrada` (id, nombre, descripcion, precio, cupoTotal, cupoDisponible, métodos `hayCupoPara(cantidad)`, `decrementarCupo(cantidad)`, `reintegrarCupo(cantidad)`).
   - `Evento` (id, nombre, descripcion, categoriaId, fecha, tiposEntrada, multimedia, organizadorId, métodos `tuPrecioEstaEntre(min, max)`, `precioMinimo()`, `precioMaximo()`, `cupoTotalDisponible()`).
   - `EstadoCompra`: enumerado con estados `PENDIENTE`, `CONFIRMADA`, `UTILIZADA`, `CANCELADA`, `REEMBOLSADA`.
-  - `Compra` (id, compradorId, eventoId, tipoEntradaId, cantidad, total, estado, fechaCompra, método `actualizarEstado(nuevoEstado)`).
-  - `CambioEstadoCompra` (id, compraId, estado, quienId, fechaHora): auditoría de transiciones.
-- [ ] Implementar repositorios en memoria (`InMemoryStore`):
+  - `Compra` (id, compradorId, eventoId, tipoEntradaId, cantidad, total, estado, fechaCompra, fechaExpiracion, historialEstados, métodos `actualizarEstado`, `haExpirado`, `calcularDiasFaltantes`).
+  - `CambioEstadoCompra` (id, compraId, estadoAnterior, estadoNuevo, quienId, fechaHora, motivo): auditoría de transiciones encapsulada en la raíz de agregado.
+- [x] Implementar repositorios en memoria (`InMemoryStore`):
   - `CategoriaRepository`: búsqueda, listado y persistencia en `inMemoryStore.categorias`.
   - `EventoRepository`: búsqueda por id, filtrado avanzado por texto, categoría, precio y organizador en `inMemoryStore.eventos`.
   - `CompraRepository`: transacciones seguras de cupos, búsqueda por comprador y evento en `inMemoryStore.compras`.
-- [ ] Implementar servicios y controladores con validación Zod:
+- [x] Implementar servicios y controladores con validación Zod:
   - **Categorías & Catálogo:**
     - `GET /api/categorias`: Listado de categorías disponibles.
     - `POST /api/eventos`: Creación de evento (solo rol `ORGANIZADOR`) con tipos de entrada segmentados (**CU-04**).
@@ -152,15 +152,20 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
     - `GET /api/eventos/:id`: Detalle completo del evento, tipos de entrada disponibles con cupos y datos del organizador (**CU-10**).
     - `GET /api/organizadores/:id/eventos`: Eventos propios creados por el organizador autenticado.
   - **Circuito Transaccional de Compras:**
-    - `POST /api/compras`: Adquisición de entradas con validación estricta de cupos (`hayCupoPara`), decremento atómico y confirmación inmediata (**CU-12**).
+    - `POST /api/compras`: Adquisición de entradas con reserva de cupo por 15 minutos en estado `PENDIENTE` (**CU-12**).
+    - `POST /api/compras/:id/pagos`: Confirmación de pago simulado y transición a estado `CONFIRMADA`.
     - `GET /api/compras/mis-compras`: Historial de compras del comprador logueado con cálculo dinámico de `diasFaltantes` hasta la fecha del evento para entradas confirmadas (**CU-01**).
-    - `GET /api/eventos/:id/compras`: Compras de un evento (solo organizador dueño) con estados y cupos restantes (**CU-02**).
-    - `POST /api/compras/:id/cancelar`: Cancelación y reembolso de compra si no está `UTILIZADA` y el evento no se realizó, con reintegro automático del cupo disponible (**CU-07, CU-08**).
-    - `PATCH /api/compras/:id/utilizar`: Marcar entrada como `UTILIZADA` por el organizador.
-- [ ] Seeds de prueba y Pruebas Automatizadas:
+    - `GET /api/eventos/:id/compras`: Compras de un evento (solo organizador dueño) con estados, total recaudado y cupos restantes (**CU-02**).
+    - `PATCH /api/compras/:id/estado`: Transiciones de estado REST puro:
+      - `CANCELADA`: cancelación de compras pendientes con liberación de cupo.
+      - `REEMBOLSADA`: cancelación y reembolso de compra `CONFIRMADA` antes de la realización del evento con reintegro automático de cupo (**CU-07, CU-08**).
+      - `UTILIZADA`: validación de entrada en puerta por el organizador.
+    - `GET /api/compras/:id`: Detalle completo de compra con timeline de auditoría.
+- [x] Seeds de prueba y Pruebas Automatizadas:
   - Cargar eventos y categorías semilla realistas con imágenes y tipos de entrada.
-  - Tests unitarios de dominio (`Evento.test.js`, `TipoEntrada.test.js`, `Compra.test.js`).
-  - Tests de integración de endpoints (`eventos.test.js`, `compras.test.js`) con Jest y Supertest.
+  - Cargar compras iniciales confirmadas y pendientes para comprador demo.
+  - Tests unitarios de dominio (`Categoria.test.js`, `TipoEntrada.test.js`, `Evento.test.js`, `Compra.test.js`, `CambioEstadoCompra.test.js`).
+  - Tests de integración de endpoints (`eventos.test.js`, `compras.test.js`) con Jest y Supertest (11 test suites, 76 tests pasando).
 
 #### 2. Ramas de Trabajo Sugeridas
 - `feature/backend-events-catalog`

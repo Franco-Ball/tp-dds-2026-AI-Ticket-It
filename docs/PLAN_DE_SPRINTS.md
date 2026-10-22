@@ -184,33 +184,36 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 > **Objetivo:** Completar el 100% de la API Backend implementando el canal de mensajería interna dentro de cada compra, el sistema de calificaciones post-evento y el cálculo dinámico de reputación del organizador. Cubre **CU-05, CU-06, CU-09 y CU-10**.
 
 #### 1. Backend (`packages/backend`)
-- [ ] Implementar modelos de dominio:
-  - `Mensaje` (id, compraId, usuarioId, mensaje, fechaEnvio).
-  - `Resenia` (id, compradorId, eventoId, organizadorId, detalle, puntuacion [1.0 a 5.0], fecha).
-- [ ] Implementar repositorios en memoria (`InMemoryStore`):
+- [x] Implementar modelos de dominio:
+  - `Mensaje` (id, compraId, usuarioId, mensaje, fechaEnvio, toJSON).
+  - `Resenia` (id, compradorId, eventoId, organizadorId, detalle, puntuacion [1.0 a 5.0], fecha, toJSON).
+- [x] Implementar repositorios en memoria (`InMemoryStore`):
   - `MensajeRepository`: persistencia y consulta cronológica en `inMemoryStore.mensajes`.
-  - `ReseniaRepository`: consulta por evento, por organizador y cálculo de promedio en `inMemoryStore.resenias`.
-- [ ] Implementar servicios y controladores con validación Zod:
+  - `ReseniaRepository`: consulta por evento, por organizador, unicidad por comprador/evento y cálculo de promedio en `inMemoryStore.resenias`.
+- [x] Implementar servicios y controladores con validación Zod:
   - **Chat de Compra:**
-    - `GET /api/compras/:id/mensajes`: Historial de mensajes entre comprador y organizador.
-    - `POST /api/compras/:id/mensajes`: Enviar mensaje validando que solo el comprador titular o el organizador del evento puedan participar (**CU-05, CU-06**).
+    - `GET /api/compras/:id/mensajes`: Historial de mensajes entre comprador y organizador con remitentes enriquecidos (**CU-05, CU-06**).
+    - `POST /api/compras/:id/mensajes`: Enviar mensaje validando que solo el comprador titular o el organizador del evento puedan participar, restringiendo compras canceladas/reembolsadas (**CU-05, CU-06**).
   - **Reseñas y Reputación:**
-    - `POST /api/eventos/:id/resenias`: Crear reseña validando que el usuario tenga una compra en estado `UTILIZADA` para dicho evento (**CU-09**).
-    - `GET /api/organizadores/:id/resenias`: Historial de opiniones y cálculo del promedio de reputación histórica (**CU-10**).
-    - Integrar reputación en `GET /api/eventos/:id` y `GET /api/eventos` para ordenamiento por puntaje.
-- [ ] Seeds y Pruebas Automatizadas:
-  - Cargar mensajes y reseñas iniciales en los datos semilla.
-  - Tests unitarios y de integración (`chat.test.js`, `resenias.test.js`).
+    - `POST /api/eventos/:id/resenias`: Crear reseña validando que el usuario tenga una compra en estado `UTILIZADA` para dicho evento y garantizando unicidad (**CU-09**).
+    - `GET /api/eventos/:id/resenias`: Listado público de reseñas del evento con datos del asistente.
+    - `GET /api/organizadores/:id/resenias`: Historial de opiniones y cálculo del promedio de reputación histórica consolidada (**CU-10**).
+    - Integración de reputación dinámica en `GET /api/eventos/:id` (incluyendo `reseniasAnteriores`) y actualización en todos los eventos del organizador para ordenamiento por puntaje (`GET /api/eventos?sortBy=puntaje`) (**CU-10, CU-11**).
+- [x] Seeds, Documentación Swagger y Pruebas Automatizadas:
+  - Cargar evento histórico, compra `UTILIZADA` y reseña inicial en `seedData.js`.
+  - Documentar endpoints, tags y schemas en Swagger UI (`/api-docs` y `/api/docs`).
+  - Tests unitarios y de integración (`Mensaje.test.js`, `Resenia.test.js`, `chat.test.js`, `resenias.test.js`).
+  - Suite completa: 15 suites de pruebas, 109 tests pasando al 100%, 0 errores de ESLint.
 
 #### 2. Ramas de Trabajo Sugeridas
-- `feature/backend-chat-messaging`
-- `feature/backend-reviews-reputation`
+- `feature/backend-chat-messaging` (Merged)
+- `feature/backend-reviews-reputation` (Merged)
 
 #### 3. Criterios de Aceptación (DoD)
 - Comprador y organizador pueden intercambiar mensajes dentro de una compra.
 - Solo compras en estado `UTILIZADA` permiten emitir calificaciones y comentarios.
 - El promedio de reputación del organizador se calcula y refleja correctamente en el catálogo.
-- La API backend queda 100% terminada y cubierta por pruebas.
+- La API backend queda 100% terminada, documentada con Swagger y cubierta por pruebas.
 
 ---
 

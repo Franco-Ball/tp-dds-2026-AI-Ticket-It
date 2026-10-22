@@ -187,20 +187,69 @@ stateDiagram-v2
 
 ---
 
-## 5. Decisiones de la Capa Frontend Mobile (Expo React Native)
+---
 
-### 5.1. Expo SDK 52 y Soporte Web Unificado
+## 5. Decisiones de la Capa de Comunicación, Reseñas y Reputación (Sprint 4)
+
+### 5.1. Chat Bidireccional en Compras (CU-05, CU-06)
+- **Problema de Diseño:** El comprador y el organizador necesitan comunicarse para coordinar detalles (accesos, horarios, dudas). ¿Cómo modelar el canal de mensajes y quiénes tienen permiso para participar?
+- **Decisión:**
+  - **Subrecurso REST Anidado:** Se monta sobre `/api/compras/:id/mensajes`. Un mensaje pertenece ontológicamente al contexto de una compra específica (`compraId`).
+  - **Control de Acceso Estricto (CU-05, CU-06):**
+    - Solo el **comprador titular** (`compra.compradorId === usuarioId`) o el **organizador dueño del evento** (`evento.organizadorId === usuarioId`) pueden leer el historial o enviar mensajes. Usuarios ajenos reciben `403 Forbidden`.
+  - **Ciclo de Vida y Transiciones:**
+    - Se permite el envío de mensajes mientras la compra se encuentra en estados activos: `PENDIENTE`, `CONFIRMADA` o `UTILIZADA`.
+    - Si la compra pasa a `CANCELADA` o `REEMBOLSADA`, el canal pasa a modo **solo lectura**: se puede consultar el historial histórico, pero cualquier intento de envío de nuevos mensajes es rechazado con `422 Unprocessable Entity` ("No es posible enviar mensajes en una compra cancelada o reembolsada").
+  - **Enriquecimiento del Remitente en la Respuesta:**
+    - Cada mensaje devuelto incluye el objeto `remitente` (`id`, `nombre`, `apellido`, `rol`). Esto permite a la interfaz móvil renderizar avatares y burbujas de diálogo sin requerir múltiples consultas adicionales al backend.
+
+---
+
+### 5.2. Sistema de Reseñas Post-Evento y Elegibilidad Estricta (CU-09)
+- **Problema de Diseño:** ¿Quiénes pueden calificar un evento y cómo se garantiza la autenticidad de las opiniones sin spam o calificaciones ficticias?
+- **Decisión:**
+  - **Elegibilidad Estricta (Proof of Attendance):** Solo los usuarios con rol `COMPRADOR` que posean al menos una compra en estado `UTILIZADA` para ese evento específico pueden emitir una reseña. Si no tienen una compra utilizada, se rechaza con `422 Unprocessable Entity` ("Solo puedes calificar un evento si posees una entrada en estado UTILIZADA").
+  - **Garantía de Unicidad:** Un comprador solo puede emitir una única reseña por evento. Si intenta enviar una segunda calificación, el backend responde con `409 Conflict` ("Ya has emitido una reseña para este evento").
+  - **Reglas de Dominio del Modelo `Resenia`:**
+    - Puntuación numérica en rango [1.0, 5.0], redondeada a un decimal (`Math.round(puntuacion * 10) / 10`).
+    - Comentario textual obligatorio (`detalle`) no vacío (mínimo 1 carácter, máximo 1000).
+    - Timestamp de emisión automático en formato ISO-8601.
+
+---
+
+### 5.3. Reputación Consolidada del Organizador y Ordenamiento Reactivo (CU-10, CU-11)
+- **Problema de Diseño:** ¿Cómo se calcula la reputación del organizador y cómo impacta en las búsquedas del catálogo (`GET /api/eventos?sortBy=puntaje`)?
+- **Decisión:**
+  - **Reputación Global por Organizador:** La reputación de un organizador es el promedio aritmético de todas las reseñas recibidas a lo largo de todos sus eventos finalizados. Si un organizador no posee reseñas previas, su reputación es `null` y `totalResenias: 0`.
+  - **Propagación Reactiva:** Cuando un comprador envía una reseña válida, el servicio `ReseniaService` calcula inmediatamente la nueva reputación del organizador y actualiza el campo `puntajePromedio` en todos los eventos de ese organizador en el repositorio en memoria.
+  - **Enriquecimiento en Detalle de Evento (`GET /api/eventos/:id`):** Devuelve `organizador.reputacion`, `organizador.totalResenias` y las 5 reseñas más recientes de eventos anteriores (`reseniasAnteriores`), permitiendo a los compradores informarse antes de comprar entradas.
+  - **Ordenamiento Consistente:** En `GET /api/eventos?sortBy=puntaje&order=desc`, los eventos de organizadores con mayor reputación aparecen primero, posicionando al final los eventos sin calificaciones previas.
+
+---
+
+### 5.4. Documentación Interactiva de la API con OpenAPI 3.0 / Swagger UI
+- **Decisión:** Documentar el 100% de los endpoints de la API utilizando la especificación OpenAPI 3.0 mediante `swagger-ui-express`, disponible en las rutas `/api-docs` y `/api/docs`.
+- **Características:**
+  - Soporte interactivo para el esquema de seguridad `BearerAuth` con token JWT.
+  - Modelos y esquemas de respuesta tipados con ejemplos realistas (`Usuario`, `Evento`, `Compra`, `Mensaje`, `Resenia`, `ReputacionOrganizadorResponse`).
+  - Catálogo completo de códigos de estado HTTP (200, 201, 400, 401, 403, 404, 409, 422, 500) con mensajes descriptivos.
+
+---
+
+## 6. Decisiones de la Capa Frontend Mobile (Expo React Native)
+
+### 6.1. Expo SDK 52 y Soporte Web Unificado
 - **Decisión:** Desarrollar sobre Expo React Native con Metro bundler, garantizando ejecución nativa en dispositivos móviles (iOS/Android mediante Expo Go) y navegador web para desarrollo rápido.
 - **Solución a Gotchas de React Native Web:**
   - Configuración del elemento raíz `#root` en `packages/frontend/public/index.html` con `height: 100%; display: flex; flex-direction: column;` para evitar el colapso a 0px de altura (pantalla blanca).
   - Reemplazo de tokens no estándar (`%PUBLIC_URL%`) para evitar excepciones en el parser de Metro bundler.
   - Uso condicional de `KeyboardAvoidingView` según la plataforma (`Platform.OS === 'ios' ? 'padding' : undefined`) para evitar roturas de layout en navegadores de escritorio.
 
-### 5.2. Modal Personalizado de Confirmación (`ConfirmModal`)
+### 6.2. Modal Personalizado de Confirmación (`ConfirmModal`)
 - **Decisión:** Eliminar el uso de `window.confirm()` del navegador y `Alert.alert()` nativo en favor de un componente UI React Native propio: [ConfirmModal.js](file:///Users/francoball/Estudio/UTN/3año/DDS/TP-Individual/tp-dds-2026-AI-Ticket-It/packages/frontend/src/components/ui/ConfirmModal.js).
 - **Fundamento:** Los diálogos nativos del navegador se cierran inesperadamente en entornos iframe o pierden el foco en web, generando inconsistencias al cerrar sesión o cancelar compras. El modal personalizado provee un backdrop oscuro elegante, accesibilidad y consistencia visual en todas las plataformas.
 
-### 5.3. Identidad Visual Oficial de la Cátedra
+### 6.3. Identidad Visual Oficial de la Cátedra
 - **Decisión:** Paleta de diseño basada en el logo oficial provisto en `docs/logo_catedra.png`:
   - Color Primario Marca: Verde Ticket It `#55d233`.
   - Fondo y Superficies: Modo Oscuro con escala de grises slate (`#0f172a`, `#1e293b`, `#334155`).
@@ -208,7 +257,7 @@ stateDiagram-v2
 
 ---
 
-## 6. Estrategia de Testing y Verificación de Calidad
+## 7. Estrategia de Testing y Verificación de Calidad
 
 ```
                /\
@@ -221,17 +270,19 @@ stateDiagram-v2
 ```
 
 - **Tests Unitarios de Dominio (Sin Mocks):**
-  - Prueban exhaustivamente la lógica pura de negocio: `Usuario.test.js`, `Categoria.test.js`, `TipoEntrada.test.js`, `Evento.test.js`, `Compra.test.js` y `CambioEstadoCompra.test.js`.
-  - Verifican decremento de cupos, errores por falta de disponibilidad, transiciones de estado válidas e inválidas, y serialización `toJSON()`.
+  - Prueban exhaustivamente la lógica pura de negocio: `Usuario.test.js`, `Categoria.test.js`, `TipoEntrada.test.js`, `Evento.test.js`, `Compra.test.js`, `CambioEstadoCompra.test.js`, `Mensaje.test.js` y `Resenia.test.js`.
+  - Verifican decremento de cupos, errores por falta de disponibilidad, transiciones de estado válidas e inválidas, unicidad de reseñas, cálculo de reputación y serialización `toJSON()`.
 - **Tests de Integración de Endpoints (Supertest + Express):**
   - `auth.test.js`: Registro, login, emisión y validación de tokens JWT.
   - `eventos.test.js`: Catálogo público, búsqueda textual, filtros por categoría y precio, ordenamientos ascendente y descendente, y permisos de publicación para organizadores.
   - `compras.test.js`: Flujo transaccional completo: reserva en `PENDIENTE`, pago a `CONFIRMADA`, consulta de `mis-compras` con días faltantes, panel de compras de organizador con cupos restantes, reembolsos con restitución de stock y rechazo de reembolsos para entradas ya utilizadas.
-- **Resultados:** 11 suites de test ejecutadas con **100% de éxito (76 tests pasando)** y **0 advertencias en ESLint**.
+  - `chat.test.js`: Envío de mensajes de comprador y organizador, bloqueo a usuarios ajenos con 403, restricción de escritura en compras reembolsadas con 422, e historial cronológico con remitentes.
+  - `resenias.test.js`: Requisito de entrada `UTILIZADA`, rechazo con 422 para no asistentes, prevención de reseñas duplicadas con 409, cálculo de reputación del organizador y ordenamiento en catálogo por puntaje (`sortBy=puntaje`).
+- **Resultados:** 15 suites de test ejecutadas con **100% de éxito (109 tests pasando)** y **0 advertencias en ESLint**.
 
 ---
 
-## 7. Matriz de Trazabilidad: Casos de Uso vs. Componentes
+## 8. Matriz de Trazabilidad: Casos de Uso vs. Componentes
 
 | Caso de Uso | Descripción Resumida | Implementación Backend | Endpoint / Método |
 | :--- | :--- | :--- | :--- |
@@ -239,7 +290,12 @@ stateDiagram-v2
 | **CU-02** | Organizador visualiza compras de evento y cupos restantes de cada tipo | `CompraService.obtenerComprasDeEvento()` | `GET /api/eventos/:id/compras` |
 | **CU-03** | Comprador busca eventos por texto o explora por categoría | `EventoRepository.buscarTodos()`, `CategoriaService.listarTodas()` | `GET /api/eventos?q=...&categoria=...`, `GET /api/categorias` |
 | **CU-04** | Organizador crea evento con múltiples tipos de entrada, precios y cupos | `EventoService.crearEvento()`, `TipoEntrada` | `POST /api/eventos` |
+| **CU-05** | Comprador envía mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `Mensaje` | `POST /api/compras/:id/mensajes` |
+| **CU-06** | Organizador responde mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `ChatService.obtenerHistorial()` | `POST /api/compras/:id/mensajes`, `GET /api/compras/:id/mensajes` |
 | **CU-07** | Comprador cancela compra para obtener reembolso | `CompraService.actualizarEstado()`, `TipoEntrada.reintegrarCupo()` | `PATCH /api/compras/:id/estado` (`REEMBOLSADA`) |
 | **CU-08** | Restricción: solo cancelar si no está utilizada y evento no se realizó | Validaciones en `CompraService.actualizarEstado()` | `PATCH /api/compras/:id/estado` |
+| **CU-09** | Comprador puntúa y comenta evento con entrada UTILIZADA | `ReseniaService.crearResenia()`, `Resenia` | `POST /api/eventos/:id/resenias` |
+| **CU-10** | Reseñas históricas y reputación se visualizan en eventos y organizador | `ReseniaService.obtenerReseniasDeOrganizador()`, `EventoService.obtenerPorId()` | `GET /api/organizadores/:id/resenias`, `GET /api/eventos/:id` |
 | **CU-11** | Comprador ordena eventos por precio, fecha y puntaje | `EventoRepository.buscarTodos()` con lógica de ordenamiento | `GET /api/eventos?sortBy=precio\|fecha\|puntaje&order=asc\|desc` |
 | **CU-12** | Comprador compra entrada seleccionando tipo y cantidad sin superar cupo | `TipoEntrada.decrementarCupo()`, `CompraService.crearCompra()` | `POST /api/compras` |
+

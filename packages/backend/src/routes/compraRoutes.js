@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { CompraController } from "../controllers/CompraController.js";
+import { ChatController } from "../controllers/ChatController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { requireRole } from "../middlewares/requireRole.js";
 import { RolUsuario } from "../models/enums.js";
 
 const compraController = new CompraController();
+const chatController = new ChatController();
 const router = Router();
 
 // Adquisición de entradas (Comprador)
@@ -42,6 +44,19 @@ router.get(
   "/:id",
   authMiddleware(),
   (req, res, next) => compraController.obtenerPorId(req, res, next)
+);
+
+// --- Chat de la Compra (CU-05, CU-06) ---
+router.get(
+  "/:id/mensajes",
+  authMiddleware(),
+  (req, res, next) => chatController.obtenerHistorial(req, res, next)
+);
+
+router.post(
+  "/:id/mensajes",
+  authMiddleware(),
+  (req, res, next) => chatController.enviarMensaje(req, res, next)
 );
 
 export default router;

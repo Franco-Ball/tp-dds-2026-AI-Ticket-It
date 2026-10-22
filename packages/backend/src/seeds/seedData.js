@@ -4,9 +4,12 @@ import { RolUsuario } from "../models/enums.js";
 import { Categoria } from "../models/Categoria.js";
 import { Evento } from "../models/Evento.js";
 import { TipoEntrada } from "../models/TipoEntrada.js";
+import { Compra } from "../models/Compra.js";
+import { EstadoCompra } from "../models/enums.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
 import { CategoriaRepository } from "../repositories/CategoriaRepository.js";
 import { EventoRepository } from "../repositories/EventoRepository.js";
+import { CompraRepository } from "../repositories/CompraRepository.js";
 import { inMemoryStore } from "../repositories/InMemoryStore.js";
 
 export const USUARIOS_SEMILLA = [
@@ -248,8 +251,53 @@ export async function cargarSeeds(force = false) {
     }
   }
 
+  // 4. Cargar Compras Iniciales para Comprador Demo
+  const comprador = usuariosGuardados["comprador@demo.com"];
+  if (comprador) {
+    const comprasExistentes = await CompraRepository.buscarTodos();
+    if (comprasExistentes.length === 0) {
+      const eventos = await EventoRepository.buscarTodos();
+      const coldplay = eventos.find((e) => e.nombre.includes("Coldplay"));
+      const gronholm = eventos.find((e) => e.nombre.includes("Grönholm"));
+
+      if (coldplay && coldplay.tiposEntrada.length > 0) {
+        const tipoCampo = coldplay.tiposEntrada[0];
+        tipoCampo.decrementarCupo(2);
+        await EventoRepository.guardar(coldplay);
+
+        const compraConfirmada = new Compra({
+          compradorId: comprador.id,
+          eventoId: coldplay.id,
+          tipoEntradaId: tipoCampo.id,
+          cantidad: 2,
+          precioUnitario: tipoCampo.precio,
+          estado: EstadoCompra.CONFIRMADA,
+          fechaCompra: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+        await CompraRepository.guardar(compraConfirmada);
+      }
+
+      if (gronholm && gronholm.tiposEntrada.length > 0) {
+        const tipoPullman = gronholm.tiposEntrada[0];
+        tipoPullman.decrementarCupo(1);
+        await EventoRepository.guardar(gronholm);
+
+        const compraPendiente = new Compra({
+          compradorId: comprador.id,
+          eventoId: gronholm.id,
+          tipoEntradaId: tipoPullman.id,
+          cantidad: 1,
+          precioUnitario: tipoPullman.precio,
+          estado: EstadoCompra.PENDIENTE,
+          fechaCompra: new Date().toISOString(),
+        });
+        await CompraRepository.guardar(compraPendiente);
+      }
+    }
+  }
+
   inMemoryStore.isInitialized = true;
   if (process.env.NODE_ENV !== "test") {
-    console.log("🌱 Datos semilla cargados exitosamente en InMemoryStore (Usuarios, Categorías y Eventos).");
+    console.log("🌱 Datos semilla cargados exitosamente en InMemoryStore (Usuarios, Categorías, Eventos y Compras).");
   }
 }

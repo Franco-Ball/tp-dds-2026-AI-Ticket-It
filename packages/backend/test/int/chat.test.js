@@ -40,7 +40,7 @@ describe("Integración: Chat en Compras API (CU-05 y CU-06)", () => {
 
     // Obtener un evento y crear una compra confirmada
     const resEventos = await request(app).get("/api/eventos");
-    const evento = resEventos.body[0];
+    const evento = resEventos.body.find((e) => new Date(e.fecha) > new Date());
     eventoId = evento.id;
     const tipoEntradaId = evento.tiposEntrada[0].id;
 

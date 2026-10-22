@@ -29,9 +29,9 @@ describe("Integración: Circuito de Compras, Cupos y Estados API", () => {
     organizadorToken = resOrganizador.body.token;
     organizadorId = resOrganizador.body.usuario.id;
 
-    // Obtener un evento y tipo de entrada
+    // Obtener un evento futuro y tipo de entrada
     const resEventos = await request(app).get("/api/eventos");
-    const evento = resEventos.body[0];
+    const evento = resEventos.body.find((e) => new Date(e.fecha) > new Date());
     eventoId = evento.id;
     tipoEntradaId = evento.tiposEntrada[0].id;
     precioEntrada = evento.tiposEntrada[0].precio;

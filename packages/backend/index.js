@@ -8,7 +8,8 @@ const start = async () => {
   await cargarSeeds();
 
   app.listen(PORT, () => {
-    console.log(`Backend de AI Ticket It escuchando en puerto ${PORT}`);
+    console.log(`🚀 Backend de AI Ticket It escuchando en puerto ${PORT}`);
+    console.log(`📖 Documentación Swagger interactiva: http://localhost:${PORT}/api-docs`);
   });
 };
 

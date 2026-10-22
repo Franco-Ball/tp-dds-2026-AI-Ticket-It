@@ -2,17 +2,20 @@ import { Evento } from "../models/Evento.js";
 import { EventoRepository } from "../repositories/EventoRepository.js";
 import { CategoriaRepository } from "../repositories/CategoriaRepository.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
+import { ReseniaRepository } from "../repositories/ReseniaRepository.js";
 import { NotFoundError, UnprocessableEntityError } from "../errors/AppError.js";
 
 export class EventoService {
   constructor(
     eventoRepository = EventoRepository,
     categoriaRepository = CategoriaRepository,
-    usuarioRepository = UsuarioRepository
+    usuarioRepository = UsuarioRepository,
+    reseniaRepository = ReseniaRepository
   ) {
     this.eventoRepository = eventoRepository;
     this.categoriaRepository = categoriaRepository;
     this.usuarioRepository = usuarioRepository;
+    this.reseniaRepository = reseniaRepository;
   }
 
   crearEvento = async ({
@@ -45,6 +48,9 @@ export class EventoService {
       throw new UnprocessableEntityError("La fecha del evento debe ser posterior a la fecha actual");
     }
 
+    // Calcular reputación actual del organizador si ya tiene
+    const repInfo = await this.reseniaRepository.calcularReputacionOrganizador(organizadorId);
+
     const nuevoEvento = new Evento({
       nombre,
       descripcion,
@@ -53,6 +59,7 @@ export class EventoService {
       organizadorId,
       multimedia,
       tiposEntrada,
+      puntajePromedio: repInfo.reputacion || 0,
     });
 
     const guardado = await this.eventoRepository.guardar(nuevoEvento);
@@ -72,15 +79,22 @@ export class EventoService {
 
     const eventoJSON = evento.toJSON();
 
-    // Enriquecer con datos del organizador
+    // Enriquecer con datos del organizador y reputación histórica (CU-10)
     const organizador = await this.usuarioRepository.buscarPorId(evento.organizadorId);
     if (organizador) {
+      const repInfo = await this.reseniaRepository.calcularReputacionOrganizador(organizador.id);
       eventoJSON.organizador = {
         id: organizador.id,
         nombre: organizador.nombre,
         apellido: organizador.apellido,
         email: organizador.email,
+        reputacion: repInfo.reputacion,
+        totalResenias: repInfo.totalResenias,
       };
+
+      // Reseñas de eventos anteriores de este organizador (CU-10)
+      const reseniasOrg = await this.reseniaRepository.buscarPorOrganizador(organizador.id);
+      eventoJSON.reseniasAnteriores = reseniasOrg.slice(0, 5).map((r) => r.toJSON());
     }
 
     // Enriquecer con datos de categoría

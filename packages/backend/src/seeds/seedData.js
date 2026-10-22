@@ -10,6 +10,8 @@ import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
 import { CategoriaRepository } from "../repositories/CategoriaRepository.js";
 import { EventoRepository } from "../repositories/EventoRepository.js";
 import { CompraRepository } from "../repositories/CompraRepository.js";
+import { Resenia } from "../models/Resenia.js";
+import { ReseniaRepository } from "../repositories/ReseniaRepository.js";
 import { inMemoryStore } from "../repositories/InMemoryStore.js";
 
 export const USUARIOS_SEMILLA = [
@@ -240,6 +242,25 @@ export async function cargarSeeds(force = false) {
             }),
           ],
         },
+        {
+          nombre: "Festival Rock Nacional 2025",
+          descripcion: "La edición histórica anterior que convocó a más de 30.000 personas en el predio de San Isidro.",
+          categoriaId: categoriasGuardadas["Festivales"]?.id,
+          fecha: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+          organizadorId: organizador.id,
+          multimedia: [
+            "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1200",
+          ],
+          tiposEntrada: [
+            new TipoEntrada({
+              nombre: "Entrada General",
+              descripcion: "Acceso al predio completo.",
+              precio: 20000,
+              cupoTotal: 1000,
+              cupoDisponible: 999,
+            }),
+          ],
+        },
       ];
 
       for (const evData of eventosADarDeAlta) {
@@ -259,6 +280,7 @@ export async function cargarSeeds(force = false) {
       const eventos = await EventoRepository.buscarTodos();
       const coldplay = eventos.find((e) => e.nombre.includes("Coldplay"));
       const gronholm = eventos.find((e) => e.nombre.includes("Grönholm"));
+      const rockNacional = eventos.find((e) => e.nombre.includes("Rock Nacional"));
 
       if (coldplay && coldplay.tiposEntrada.length > 0) {
         const tipoCampo = coldplay.tiposEntrada[0];
@@ -293,11 +315,48 @@ export async function cargarSeeds(force = false) {
         });
         await CompraRepository.guardar(compraPendiente);
       }
+
+      if (rockNacional && rockNacional.tiposEntrada.length > 0) {
+        const tipoGeneral = rockNacional.tiposEntrada[0];
+        const compraUtilizada = new Compra({
+          compradorId: comprador.id,
+          eventoId: rockNacional.id,
+          tipoEntradaId: tipoGeneral.id,
+          cantidad: 1,
+          precioUnitario: tipoGeneral.precio,
+          estado: EstadoCompra.UTILIZADA,
+          fechaCompra: new Date(Date.now() - 70 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+        await CompraRepository.guardar(compraUtilizada);
+
+        // 5. Cargar Reseña Histórica y Reputación Inicial (CU-09, CU-10)
+        const reseniasExistentes = await ReseniaRepository.buscarTodos();
+        if (reseniasExistentes.length === 0 && organizador) {
+          const reseniaInicial = new Resenia({
+            compradorId: comprador.id,
+            eventoId: rockNacional.id,
+            organizadorId: organizador.id,
+            puntuacion: 5,
+            detalle: "Excelente producción técnica y acústica. Los accesos estuvieron impecables y muy ordenados.",
+            fecha: new Date(Date.now() - 55 * 24 * 60 * 60 * 1000).toISOString(),
+          });
+          await ReseniaRepository.guardar(reseniaInicial);
+
+          // Actualizar reputación inicial en los eventos del organizador
+          const repInfo = await ReseniaRepository.calcularReputacionOrganizador(organizador.id);
+          for (const ev of eventos) {
+            if (ev.organizadorId === organizador.id) {
+              ev.puntajePromedio = repInfo.reputacion;
+              await EventoRepository.guardar(ev);
+            }
+          }
+        }
+      }
     }
   }
 
   inMemoryStore.isInitialized = true;
   if (process.env.NODE_ENV !== "test") {
-    console.log("🌱 Datos semilla cargados exitosamente en InMemoryStore (Usuarios, Categorías, Eventos y Compras).");
+    console.log("🌱 Datos semilla cargados exitosamente en InMemoryStore (Usuarios, Categorías, Eventos, Compras y Reseñas).");
   }
 }

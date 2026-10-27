@@ -8,13 +8,47 @@ import { Feather } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
-import HomeScreen from "../screens/HomeScreen";
+import ExploreScreen from "../screens/ExploreScreen";
+import EventDetailScreen from "../screens/EventDetailScreen";
+import CreateEventScreen from "../screens/CreateEventScreen";
+import MyEventsScreen from "../screens/MyEventsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import PlaceholderScreen from "../screens/PlaceholderScreen";
 import { colors } from "../theme/theme";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const ExploreStackNav = createNativeStackNavigator();
+const OrganizerStackNav = createNativeStackNavigator();
+
+function ExploreStack() {
+  return (
+    <ExploreStackNav.Navigator
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <ExploreStackNav.Screen name="ExploreHome" component={ExploreScreen} />
+      <ExploreStackNav.Screen name="EventDetail" component={EventDetailScreen} />
+    </ExploreStackNav.Navigator>
+  );
+}
+
+function OrganizerStack() {
+  return (
+    <OrganizerStackNav.Navigator
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <OrganizerStackNav.Screen name="MyEventsHome" component={MyEventsScreen} />
+      <OrganizerStackNav.Screen name="EventDetail" component={EventDetailScreen} />
+      <OrganizerStackNav.Screen name="CreateEvent" component={CreateEventScreen} />
+    </OrganizerStackNav.Navigator>
+  );
+}
 
 function BuyerTabs() {
   return (
@@ -31,10 +65,10 @@ function BuyerTabs() {
     >
       <Tab.Screen
         name="ExploreTab"
-        component={HomeScreen}
+        component={ExploreStack}
         options={{
           title: "Explorar",
-          headerTitle: "AI Ticket It",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Feather name="compass" size={size} color={color} />,
         }}
       />
@@ -43,7 +77,7 @@ function BuyerTabs() {
         component={PlaceholderScreen}
         initialParams={{
           title: "Mis Compras y Entradas",
-          sprint: "Sprint 4",
+          sprint: "Sprint 6",
           description: "Visualización de entradas adquiridas, estado de reserva, días faltantes y reembolsos.",
         }}
         options={{
@@ -80,24 +114,19 @@ function OrganizerTabs() {
     >
       <Tab.Screen
         name="EventsTab"
-        component={HomeScreen}
+        component={OrganizerStack}
         options={{
           title: "Mis Eventos",
-          headerTitle: "AI Ticket It - Organizador",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Feather name="calendar" size={size} color={color} />,
         }}
       />
       <Tab.Screen
         name="CreateEventTab"
-        component={PlaceholderScreen}
-        initialParams={{
-          title: "Publicar Nuevo Evento",
-          sprint: "Sprint 3",
-          description: "Definición de títulos, fechas, categorías y tipos de entrada con cupo y precio.",
-        }}
+        component={CreateEventScreen}
         options={{
           title: "Publicar",
-          headerTitle: "Publicar Evento",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Feather name="plus-circle" size={size} color={color} />,
         }}
       />

@@ -59,10 +59,10 @@ El plan cubre el 100% de los requerimientos técnicos y casos de uso especificad
 ```
 Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Completado ✅)
     └── Sprint 2: Migración a React Native (Expo) & UI/UX Oficial (Completado ✅)
-          └── Sprint 3: Backend Core — Eventos, Catálogo, Compras, Cupos y Estados
-                └── Sprint 4: Backend Social — Chat en Compras, Reseñas y Reputación
-                      └── Sprint 5: Frontend Mobile — Catálogo, Búsqueda, Filtros y Publicación
-                            └── Sprint 6: Frontend Mobile — Compras, Seguimiento, Chat, Reseñas & QA
+          └── Sprint 3: Backend Core — Eventos, Catálogo, Compras, Cupos y Estados (Completado ✅)
+                └── Sprint 4: Backend Social — Chat en Compras, Reseñas y Reputación (Completado ✅)
+                      └── Sprint 5: Frontend Mobile — Catálogo, Búsqueda, Filtros y Publicación (Completado ✅)
+                            └── Sprint 6: Frontend Mobile — Compras, Seguimiento, Chat, Reseñas & QA (Próximo ⏳)
 ```
 
 
@@ -221,38 +221,41 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 > **Objetivo:** Desarrollar en React Native (Expo) las pantallas de exploración de eventos, filtros interactivos, visualización de detalles con carrusel multimedia y el formulario de publicación para organizadores. Cubre **CU-03, CU-04, CU-10 y CU-11**.
 
 #### 1. Frontend Nativo (`packages/frontend`)
-- [ ] Componente `EventCard` nativo:
+- [x] Componente `EventCard` nativo:
   - Imagen de portada, fecha formateada, badge de categoría, precio "desde $X", cupos disponibles y estrella de reputación.
-- [ ] Pantalla `ExploreScreen` (Comprador):
+- [x] Pantalla `ExploreScreen` (Comprador):
   - Barra de búsqueda de texto con **Debounce** para evitar ráfagas de peticiones al backend (Clase 10) (**CU-03**).
   - Selector horizontal deslizable de categorías (`CategoryPills`) (**CU-03**).
   - Modal de ordenamiento (`SortModal`) por precio (asc/desc), fecha y puntaje (**CU-11**).
   - Lista de eventos optimizada (`FlatList`) con pull-to-refresh y manejo de los **4 estados de UI**: Carga (`ActivityIndicator`), Error amigable con reintento, Estado vacío (*EmptyState*) y Datos cargados (Clase 10).
-- [ ] Pantalla `EventDetailScreen`:
+- [x] Pantalla `EventDetailScreen`:
   - Galería/carrusel de imágenes multimedia del evento.
   - Título, fecha, ubicación, categoría y descripción extendida.
   - Desglose visual de tipos de entrada con precios y cupos disponibles.
   - Sección del Organizador con insignia verificada y puntaje histórico (**CU-10**).
-  - Botón flotante/fijo *"Comprar Entradas"* accesible con tamaño táctil adecuado (Clase 09).
-- [ ] Pantalla `CreateEventScreen` (Organizador):
+  - Botón flotante/fijo *"Comprar Entradas"* con modal interactivo preliminar de selección y cálculo de total en tiempo real (Clase 09).
+- [x] Pantalla `CreateEventScreen` (Organizador):
   - Formulario nativo accesible (Clase 09: `keyboardType` contextual, etiquetas legibles y contraste).
-  - Título, categoría, fecha, descripción y URLs de imágenes.
-  - Constructor dinámico de tipos de entrada: agregar/quitar niveles (General, VIP, etc.) definiendo nombre, precio y cupo inicial (**CU-04**).
+  - Título, categoría, fecha, descripción y URLs de imágenes con selectores rápidos de plantillas.
+  - Constructor dinámico de tipos de entrada: añadir atajos rápidos (General, Platea, VIP) o niveles personalizados con precio y cupo inicial (**CU-04**).
   - Validación de campos y retroalimentación visual de éxito.
-- [ ] Pantalla `MyEventsScreen` (Organizador):
-  - Listado de eventos creados por el organizador con acceso rápido a creación y detalle.
-- [ ] Pautas de Accesibilidad Transversales (Clase 09 - WCAG):
+- [x] Pantalla `MyEventsScreen` (Organizador):
+  - Listado de eventos creados por el organizador con acceso rápido a creación y detalle público.
+  - Resumen métrico de eventos activos, total de entradas en inventario y reputación.
+- [x] Pautas de Accesibilidad Transversales (Clase 09 - WCAG):
   - Etiquetas descriptivas `accessibilityLabel` en botones de solo ícono y controles interactivos.
   - Tamaño de toque táctil mínimo de 48px para facilitar el uso en dispositivos móviles.
   - Ratios de contraste de color accesibles bajo la paleta oficial Clean & Bright.
 
 #### 2. Ramas de Trabajo Sugeridas
-- `feature/ui-catalog-search-filters`
-- `feature/ui-event-detail-create`
+- `feature/ui-catalog-search-filters` (Merged)
+- `feature/ui-event-detail-create` (Merged)
 
 #### 3. Criterios de Aceptación (DoD)
 - El comprador puede explorar el catálogo, buscar por texto con debounce, filtrar por categoría y ordenar eventos.
 - El organizador puede publicar nuevos eventos con múltiples tipos de entrada desde la app móvil.
+- La interfaz implementa los 4 estados de UI (loading, error, empty, data) y buenas prácticas de accesibilidad.
+- 100% de verificación con compilación en Expo Web/Mobile y 0 errores de ESLint.
 - La interfaz implementa los 4 estados de UI (loading, error, empty, data) y buenas prácticas de accesibilidad.
 
 ---
@@ -301,8 +304,8 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 | **Sprint 2** | Setup React Native (Expo) & UI/UX Oficial Cátedra | App nativa con logo, paleta oficial y pantallas de Auth | **Completado ✅** |
 | **Sprint 3** | Backend Core: Eventos, Catálogo y Compras/Cupos | API completa de eventos, transacciones de compra y cupos | **Completado ✅** |
 | **Sprint 4** | Backend Social: Chat en Compras, Reseñas y Reputación | API de chat, calificaciones y reputación histórica | **Completado ✅** |
-| **Sprint 5** | Frontend Mobile: Catálogo, Filtros y Publicación de Eventos | Pantallas de exploración, detalle y creador de eventos | **Próximo ⏳** |
-| **Sprint 6** | Frontend Mobile: Compras, Días Faltantes, Chat, Reseñas & QA | App móvil 100% funcional y lista para presentación | Pendiente |
+| **Sprint 5** | Frontend Mobile: Catálogo, Filtros y Publicación de Eventos | Pantallas de exploración, detalle y creador de eventos | **Completado ✅** |
+| **Sprint 6** | Frontend Mobile: Compras, Días Faltantes, Chat, Reseñas & QA | App móvil 100% funcional y lista para presentación | **Próximo ⏳** |
 
 ---
 

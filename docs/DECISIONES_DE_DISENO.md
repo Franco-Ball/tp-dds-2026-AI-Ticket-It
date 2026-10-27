@@ -284,18 +284,43 @@ stateDiagram-v2
 
 ## 8. Matriz de Trazabilidad: Casos de Uso vs. Componentes
 
-| Caso de Uso | Descripción Resumida | Implementación Backend | Endpoint / Método |
-| :--- | :--- | :--- | :--- |
-| **CU-01** | Comprador visualiza compras con estado y días faltantes | `Compra.calcularDiasFaltantes()`, `CompraService.obtenerMisCompras()` | `GET /api/compras/mis-compras` |
-| **CU-02** | Organizador visualiza compras de evento y cupos restantes de cada tipo | `CompraService.obtenerComprasDeEvento()` | `GET /api/eventos/:id/compras` |
-| **CU-03** | Comprador busca eventos por texto o explora por categoría | `EventoRepository.buscarTodos()`, `CategoriaService.listarTodas()` | `GET /api/eventos?q=...&categoria=...`, `GET /api/categorias` |
-| **CU-04** | Organizador crea evento con múltiples tipos de entrada, precios y cupos | `EventoService.crearEvento()`, `TipoEntrada` | `POST /api/eventos` |
-| **CU-05** | Comprador envía mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `Mensaje` | `POST /api/compras/:id/mensajes` |
-| **CU-06** | Organizador responde mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `ChatService.obtenerHistorial()` | `POST /api/compras/:id/mensajes`, `GET /api/compras/:id/mensajes` |
-| **CU-07** | Comprador cancela compra para obtener reembolso | `CompraService.actualizarEstado()`, `TipoEntrada.reintegrarCupo()` | `PATCH /api/compras/:id/estado` (`REEMBOLSADA`) |
-| **CU-08** | Restricción: solo cancelar si no está utilizada y evento no se realizó | Validaciones en `CompraService.actualizarEstado()` | `PATCH /api/compras/:id/estado` |
-| **CU-09** | Comprador puntúa y comenta evento con entrada UTILIZADA | `ReseniaService.crearResenia()`, `Resenia` | `POST /api/eventos/:id/resenias` |
-| **CU-10** | Reseñas históricas y reputación se visualizan en eventos y organizador | `ReseniaService.obtenerReseniasDeOrganizador()`, `EventoService.obtenerPorId()` | `GET /api/organizadores/:id/resenias`, `GET /api/eventos/:id` |
-| **CU-11** | Comprador ordena eventos por precio, fecha y puntaje | `EventoRepository.buscarTodos()` con lógica de ordenamiento | `GET /api/eventos?sortBy=precio\|fecha\|puntaje&order=asc\|desc` |
-| **CU-12** | Comprador compra entrada seleccionando tipo y cantidad sin superar cupo | `TipoEntrada.decrementarCupo()`, `CompraService.crearCompra()` | `POST /api/compras` |
+| Caso de Uso | Descripción Resumida | Implementación Backend | Endpoint / Método | Componente Frontend (React Native) |
+| :--- | :--- | :--- | :--- | :--- |
+| **CU-01** | Comprador visualiza compras con estado y días faltantes | `Compra.calcularDiasFaltantes()`, `CompraService.obtenerMisCompras()` | `GET /api/compras/mis-compras` | `MyPurchasesScreen` (Sprint 6) |
+| **CU-02** | Organizador visualiza compras de evento y cupos restantes de cada tipo | `CompraService.obtenerComprasDeEvento()` | `GET /api/eventos/:id/compras` | `OrganizerDashboardScreen` / `MyEventsScreen` (Sprint 6) |
+| **CU-03** | Comprador busca eventos por texto o explora por categoría | `EventoRepository.buscarTodos()`, `CategoriaService.listarTodas()` | `GET /api/eventos?q=...&categoria=...`, `GET /api/categorias` | `ExploreScreen`, `CategoryPills`, `useDebounce` (Sprint 5) |
+| **CU-04** | Organizador crea evento con múltiples tipos de entrada, precios y cupos | `EventoService.crearEvento()`, `TipoEntrada` | `POST /api/eventos` | `CreateEventScreen` (Sprint 5) |
+| **CU-05** | Comprador envía mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `Mensaje` | `POST /api/compras/:id/mensajes` | `ChatScreen` (Sprint 6) |
+| **CU-06** | Organizador responde mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `ChatService.obtenerHistorial()` | `POST /api/compras/:id/mensajes`, `GET /api/compras/:id/mensajes` | `ChatScreen` (Sprint 6) |
+| **CU-07** | Comprador cancela compra para obtener reembolso | `CompraService.actualizarEstado()`, `TipoEntrada.reintegrarCupo()` | `PATCH /api/compras/:id/estado` (`REEMBOLSADA`) | `MyPurchasesScreen` (Sprint 6) |
+| **CU-08** | Restricción: solo cancelar si no está utilizada y evento no se realizó | Validaciones en `CompraService.actualizarEstado()` | `PATCH /api/compras/:id/estado` | `MyPurchasesScreen` (Sprint 6) |
+| **CU-09** | Comprador puntúa y comenta evento con entrada UTILIZADA | `ReseniaService.crearResenia()`, `Resenia` | `POST /api/eventos/:id/resenias` | `ReviewModal` (Sprint 6) |
+| **CU-10** | Reseñas históricas y reputación se visualizan en eventos y organizador | `ReseniaService.obtenerReseniasDeOrganizador()`, `EventoService.obtenerPorId()` | `GET /api/organizadores/:id/resenias`, `GET /api/eventos/:id` | `EventDetailScreen`, `EventCard` (Sprint 5) |
+| **CU-11** | Comprador ordena eventos por precio, fecha y puntaje | `EventoRepository.buscarTodos()` con lógica de ordenamiento | `GET /api/eventos?sortBy=precio\|fecha\|puntaje&order=asc\|desc` | `SortModal`, `ExploreScreen` (Sprint 5) |
+| **CU-12** | Comprador compra entrada seleccionando tipo y cantidad sin superar cupo | `TipoEntrada.decrementarCupo()`, `CompraService.crearCompra()` | `POST /api/compras` | Modal en `EventDetailScreen` (Sprint 5/6) |
+
+---
+
+## 9. Decisiones de Diseño de Frontend Mobile (Sprint 5)
+
+### 9.1. Desacoplamiento de Servicios y API Client
+- **Decisión:** Implementar capas de servicio específicas (`eventoService.js`, `categoriaService.js`, `authService.js`) sobre un cliente HTTP base (`api.js`).
+- **Fundamento:** Cumple con la Separación de Responsabilidades enseñada en DDS (Clase 10). Las pantallas no contienen lógica de red ni manipulación directa de `fetch`/`headers`.
+
+### 9.2. Hook `useDebounce` y Manejo de los 4 Estados de UI (Clase 10)
+- **Decisión:** 
+  1. Utilizar un hook de `useDebounce(searchQuery, 350)` en el buscador de eventos.
+  2. Implementar componentes reutilizables para los 4 estados de UI: `LoadingState` (spinner y accesibilidad), `ErrorState` (mensaje claro y botón de reintento), `EmptyState` (ilustración, texto y botón para limpiar filtros) y vista de datos.
+- **Fundamento:** Evita saturar el backend con ráfagas de solicitudes ante cada tecla pulsada en dispositivos móviles y asegura que el usuario siempre tenga retroalimentación clara sobre el estado de la comunicación con el servidor.
+
+### 9.3. Jerarquía de Navegación con Stacks Anidados dentro de Tabs
+- **Decisión:** Cada pestaña principal (`ExploreTab` y `EventsTab`) contiene un `NativeStackNavigator` interno (`ExploreStack` y `OrganizerStack`).
+- **Fundamento:** Permite la navegación hacia adelante a pantallas de detalle (`EventDetailScreen`) y creación (`CreateEventScreen`) manteniendo la barra inferior de pestañas o adaptando la transición de forma nativa sin perder el estado de búsqueda o scroll.
+
+### 9.4. Accesibilidad WCAG (Clase 09) en Componentes Mobile
+- **Decisión:** Aplicar las pautas de accesibilidad POUR en todos los nuevos componentes:
+  - `accessibilityLabel` y `accessibilityRole` en todos los botones y tarjetas táctiles.
+  - Tamaño de toque táctil mínimo de 48px para facilitar el uso en pantallas táctiles (`CategoryPills`, botones de cantidad y `SortModal`).
+  - Inputs con `autoCapitalize="none"`, `returnKeyType="search"` y `keyboardType="numeric"` según el contexto.
+
 

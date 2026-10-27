@@ -224,30 +224,36 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 - [ ] Componente `EventCard` nativo:
   - Imagen de portada, fecha formateada, badge de categoría, precio "desde $X", cupos disponibles y estrella de reputación.
 - [ ] Pantalla `ExploreScreen` (Comprador):
-  - Barra de búsqueda de texto en tiempo real (**CU-03**).
+  - Barra de búsqueda de texto con **Debounce** para evitar ráfagas de peticiones al backend (Clase 10) (**CU-03**).
   - Selector horizontal deslizable de categorías (`CategoryPills`) (**CU-03**).
   - Modal de ordenamiento (`SortModal`) por precio (asc/desc), fecha y puntaje (**CU-11**).
-  - Lista de eventos optimizada (`FlatList`) con pull-to-refresh y estado vacío (*empty state*).
+  - Lista de eventos optimizada (`FlatList`) con pull-to-refresh y manejo de los **4 estados de UI**: Carga (`ActivityIndicator`), Error amigable con reintento, Estado vacío (*EmptyState*) y Datos cargados (Clase 10).
 - [ ] Pantalla `EventDetailScreen`:
   - Galería/carrusel de imágenes multimedia del evento.
   - Título, fecha, ubicación, categoría y descripción extendida.
   - Desglose visual de tipos de entrada con precios y cupos disponibles.
   - Sección del Organizador con insignia verificada y puntaje histórico (**CU-10**).
-  - Botón flotante/fijo *"Comprar Entradas"*.
+  - Botón flotante/fijo *"Comprar Entradas"* accesible con tamaño táctil adecuado (Clase 09).
 - [ ] Pantalla `CreateEventScreen` (Organizador):
-  - Formulario nativo con título, categoría, fecha, descripción y URLs de imágenes.
+  - Formulario nativo accesible (Clase 09: `keyboardType` contextual, etiquetas legibles y contraste).
+  - Título, categoría, fecha, descripción y URLs de imágenes.
   - Constructor dinámico de tipos de entrada: agregar/quitar niveles (General, VIP, etc.) definiendo nombre, precio y cupo inicial (**CU-04**).
   - Validación de campos y retroalimentación visual de éxito.
 - [ ] Pantalla `MyEventsScreen` (Organizador):
   - Listado de eventos creados por el organizador con acceso rápido a creación y detalle.
+- [ ] Pautas de Accesibilidad Transversales (Clase 09 - WCAG):
+  - Etiquetas descriptivas `accessibilityLabel` en botones de solo ícono y controles interactivos.
+  - Tamaño de toque táctil mínimo de 48px para facilitar el uso en dispositivos móviles.
+  - Ratios de contraste de color accesibles bajo la paleta oficial Clean & Bright.
 
 #### 2. Ramas de Trabajo Sugeridas
 - `feature/ui-catalog-search-filters`
 - `feature/ui-event-detail-create`
 
 #### 3. Criterios de Aceptación (DoD)
-- El comprador puede explorar el catálogo, buscar por texto, filtrar por categoría y ordenar eventos.
+- El comprador puede explorar el catálogo, buscar por texto con debounce, filtrar por categoría y ordenar eventos.
 - El organizador puede publicar nuevos eventos con múltiples tipos de entrada desde la app móvil.
+- La interfaz implementa los 4 estados de UI (loading, error, empty, data) y buenas prácticas de accesibilidad.
 
 ---
 
@@ -271,8 +277,8 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 - [ ] Modal de Calificación (`ReviewModal`):
   - Puntuación con estrellas (1 a 5) y comentario escrito, habilitado exclusivamente para compras `UTILIZADA` (**CU-09**).
 - [ ] Hardening, QA Multiplataforma y Cierre:
-  - Pruebas de integración punta a punta en Expo Web y Expo Go.
-  - Verificación final de la guía de entrega (video técnico de 5 a 10 minutos y conclusiones de uso de IA).
+  - Pruebas de integración punta a punta en Expo Web y Expo Go cubriendo caminos felices y caminos tristes (validación de cupos agotados, compras canceladas, accesos no autorizados - Clase 09).
+  - Verificación final de la guía de entrega: preparación del guión del video técnico (5 a 10 min) explicando la implementación en Backend, Frontend, recorrido de la UI y conclusiones críticas del uso de IA (ventajas, fricciones y productividad).
 
 #### 2. Ramas de Trabajo Sugeridas
 - `feature/ui-purchases-dashboard`
@@ -282,7 +288,8 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 #### 3. Criterios de Aceptación (DoD)
 - Flujo completo de compra, cancelación y uso de entradas funcional en la UI móvil.
 - Chat y reseñas funcionando en tiempo real integrados con el backend.
-- Aplicación completa y lista para la demostración técnica en video.
+- Cobertura de casos felices y caminos tristes verificados en la app.
+- Aplicación completa y lista para la demostración técnica en video según la consigna.
 
 ---
 
@@ -292,9 +299,9 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 | :---: | :--- | :--- | :---: |
 | **Sprint 1** | Base Arquitectónica, In-Memory Store & Auth JWT | Backend base, JWT y persistencia testeada | **Completado ✅** |
 | **Sprint 2** | Setup React Native (Expo) & UI/UX Oficial Cátedra | App nativa con logo, paleta oficial y pantallas de Auth | **Completado ✅** |
-| **Sprint 3** | Backend Core: Eventos, Catálogo y Compras/Cupos | API completa de eventos, transacciones de compra y cupos | **En Curso ⏳** |
-| **Sprint 4** | Backend Social: Chat en Compras, Reseñas y Reputación | API de chat, calificaciones y reputación histórica | Pendiente |
-| **Sprint 5** | Frontend Mobile: Catálogo, Filtros y Publicación de Eventos | Pantallas de exploración, detalle y creador de eventos | Pendiente |
+| **Sprint 3** | Backend Core: Eventos, Catálogo y Compras/Cupos | API completa de eventos, transacciones de compra y cupos | **Completado ✅** |
+| **Sprint 4** | Backend Social: Chat en Compras, Reseñas y Reputación | API de chat, calificaciones y reputación histórica | **Completado ✅** |
+| **Sprint 5** | Frontend Mobile: Catálogo, Filtros y Publicación de Eventos | Pantallas de exploración, detalle y creador de eventos | **Próximo ⏳** |
 | **Sprint 6** | Frontend Mobile: Compras, Días Faltantes, Chat, Reseñas & QA | App móvil 100% funcional y lista para presentación | Pendiente |
 
 ---

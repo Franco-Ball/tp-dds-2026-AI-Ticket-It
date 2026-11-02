@@ -149,3 +149,4 @@
 - [ ] Base de datos en memoria reiniciada con datos semilla listos para la demo.
 - [ ] Terminal lista para ejecutar `npm test` y mostrar los 109 tests pasando.
 - [ ] Micrófono y captura de pantalla configurados en 1080p con buen audio.
+

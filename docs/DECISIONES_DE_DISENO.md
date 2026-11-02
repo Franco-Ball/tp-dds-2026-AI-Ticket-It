@@ -286,18 +286,18 @@ stateDiagram-v2
 
 | Caso de Uso | Descripción Resumida | Implementación Backend | Endpoint / Método | Componente Frontend (React Native) |
 | :--- | :--- | :--- | :--- | :--- |
-| **CU-01** | Comprador visualiza compras con estado y días faltantes | `Compra.calcularDiasFaltantes()`, `CompraService.obtenerMisCompras()` | `GET /api/compras/mis-compras` | `MyPurchasesScreen` (Sprint 6) |
-| **CU-02** | Organizador visualiza compras de evento y cupos restantes de cada tipo | `CompraService.obtenerComprasDeEvento()` | `GET /api/eventos/:id/compras` | `OrganizerDashboardScreen` / `MyEventsScreen` (Sprint 6) |
-| **CU-03** | Comprador busca eventos por texto o explora por categoría | `EventoRepository.buscarTodos()`, `CategoriaService.listarTodas()` | `GET /api/eventos?q=...&categoria=...`, `GET /api/categorias` | `ExploreScreen`, `CategoryPills`, `useDebounce` (Sprint 5) |
-| **CU-04** | Organizador crea evento con múltiples tipos de entrada, precios y cupos | `EventoService.crearEvento()`, `TipoEntrada` | `POST /api/eventos` | `CreateEventScreen` (Sprint 5) |
-| **CU-05** | Comprador envía mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `Mensaje` | `POST /api/compras/:id/mensajes` | `ChatScreen` (Sprint 6) |
-| **CU-06** | Organizador responde mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `ChatService.obtenerHistorial()` | `POST /api/compras/:id/mensajes`, `GET /api/compras/:id/mensajes` | `ChatScreen` (Sprint 6) |
-| **CU-07** | Comprador cancela compra para obtener reembolso | `CompraService.actualizarEstado()`, `TipoEntrada.reintegrarCupo()` | `PATCH /api/compras/:id/estado` (`REEMBOLSADA`) | `MyPurchasesScreen` (Sprint 6) |
-| **CU-08** | Restricción: solo cancelar si no está utilizada y evento no se realizó | Validaciones en `CompraService.actualizarEstado()` | `PATCH /api/compras/:id/estado` | `MyPurchasesScreen` (Sprint 6) |
-| **CU-09** | Comprador puntúa y comenta evento con entrada UTILIZADA | `ReseniaService.crearResenia()`, `Resenia` | `POST /api/eventos/:id/resenias` | `ReviewModal` (Sprint 6) |
-| **CU-10** | Reseñas históricas y reputación se visualizan en eventos y organizador | `ReseniaService.obtenerReseniasDeOrganizador()`, `EventoService.obtenerPorId()` | `GET /api/organizadores/:id/resenias`, `GET /api/eventos/:id` | `EventDetailScreen`, `EventCard` (Sprint 5) |
-| **CU-11** | Comprador ordena eventos por precio, fecha y puntaje | `EventoRepository.buscarTodos()` con lógica de ordenamiento | `GET /api/eventos?sortBy=precio\|fecha\|puntaje&order=asc\|desc` | `SortModal`, `ExploreScreen` (Sprint 5) |
-| **CU-12** | Comprador compra entrada seleccionando tipo y cantidad sin superar cupo | `TipoEntrada.decrementarCupo()`, `CompraService.crearCompra()` | `POST /api/compras` | Modal en `EventDetailScreen` (Sprint 5/6) |
+| **CU-01** | Comprador visualiza compras con estado y días faltantes | `Compra.calcularDiasFaltantes()`, `CompraService.obtenerMisCompras()` | `GET /api/compras/mis-compras` | `MyPurchasesScreen`, `PurchaseCard` ✅ |
+| **CU-02** | Organizador visualiza compras de evento y cupos restantes de cada tipo | `CompraService.obtenerComprasDeEvento()` | `GET /api/eventos/:id/compras` | `EventSalesScreen`, `MyEventsScreen` ✅ |
+| **CU-03** | Comprador busca eventos por texto o explora por categoría | `EventoRepository.buscarTodos()`, `CategoriaService.listarTodas()` | `GET /api/eventos?q=...&categoria=...`, `GET /api/categorias` | `ExploreScreen`, `CategoryPills`, `useDebounce` ✅ |
+| **CU-04** | Organizador crea evento con múltiples tipos de entrada, precios y cupos | `EventoService.crearEvento()`, `TipoEntrada` | `POST /api/eventos` | `CreateEventScreen` ✅ |
+| **CU-05** | Comprador envía mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `Mensaje` | `POST /api/compras/:id/mensajes` | `ChatScreen` ✅ |
+| **CU-06** | Organizador responde mensajes sobre una compra (chat) | `ChatService.enviarMensaje()`, `ChatService.obtenerHistorial()` | `POST /api/compras/:id/mensajes`, `GET /api/compras/:id/mensajes` | `ChatScreen` ✅ |
+| **CU-07** | Comprador cancela compra para obtener reembolso | `CompraService.actualizarEstado()`, `TipoEntrada.reintegrarCupo()` | `PATCH /api/compras/:id/estado` (`REEMBOLSADA`) | `MyPurchasesScreen`, `PurchaseCard` ✅ |
+| **CU-08** | Restricción: solo cancelar si no está utilizada y evento no se realizó | Validaciones en `CompraService.actualizarEstado()` | `PATCH /api/compras/:id/estado` | `MyPurchasesScreen`, `PurchaseCard` ✅ |
+| **CU-09** | Comprador puntúa y comenta evento con entrada UTILIZADA | `ReseniaService.crearResenia()`, `Resenia` | `POST /api/eventos/:id/resenias` | `ReviewModal`, `MyPurchasesScreen` ✅ |
+| **CU-10** | Reseñas históricas y reputación se visualizan en eventos y organizador | `ReseniaService.obtenerReseniasDeOrganizador()`, `EventoService.obtenerPorId()` | `GET /api/organizadores/:id/resenias`, `GET /api/eventos/:id` | `EventDetailScreen`, `EventCard` ✅ |
+| **CU-11** | Comprador ordena eventos por precio, fecha y puntaje | `EventoRepository.buscarTodos()` con lógica de ordenamiento | `GET /api/eventos?sortBy=precio\|fecha\|puntaje&order=asc\|desc` | `SortModal`, `ExploreScreen` ✅ |
+| **CU-12** | Comprador compra entrada seleccionando tipo y cantidad sin superar cupo | `TipoEntrada.decrementarCupo()`, `CompraService.crearCompra()` | `POST /api/compras`, `POST /api/compras/:id/pagos` | Modal en `EventDetailScreen` (Checkout 2 Pasos) ✅ |
 
 ---
 
@@ -322,5 +322,42 @@ stateDiagram-v2
   - `accessibilityLabel` y `accessibilityRole` en todos los botones y tarjetas táctiles.
   - Tamaño de toque táctil mínimo de 48px para facilitar el uso en pantallas táctiles (`CategoryPills`, botones de cantidad y `SortModal`).
   - Inputs con `autoCapitalize="none"`, `returnKeyType="search"` y `keyboardType="numeric"` según el contexto.
+
+---
+
+## 10. Decisiones de Diseño de Frontend Mobile (Sprint 6)
+
+### 10.1. Flujo de Checkout Guiado en 2 Pasos con Retención Temporal de Cupo (CU-12)
+- **Decisión:** Implementar un flujo modal interactivo en 2 pasos dentro de `EventDetailScreen`:
+  1. **Paso 1 (Selección y Reserva):** El usuario elige la ubicación y cantidad. Al presionar *"Continuar al Pago"*, se invoca `POST /api/compras` que crea la compra en estado `PENDIENTE` reteniendo el cupo disponible durante 15 minutos.
+  2. **Paso 2 (Pago Simulado y Confirmación):** Se visualiza el temporizador de reserva activa, desglose de montos y selector de medios de pago (Tarjeta, Mercado Pago, Transferencia). Al confirmar, se invoca `POST /api/compras/:id/pagos` pasando la compra a `CONFIRMADA`. Si el usuario decide cancelar antes de abonar, se invoca `PATCH /api/compras/:id/estado` (`CANCELADA`) liberando inmediatamente los cupos al inventario general.
+  3. **Paso 3 (Éxito y Acceso Directo):** Confirmación visual con botón directo hacia *"Mis Compras"* para ver el Ticket QR emitido.
+- **Fundamento:** Resuelve la concurrencia y previene la sobreventa (*overselling*) garantizando una experiencia de usuario fluida y transparente sin fricciones ni pérdidas de stock.
+
+### 10.2. Panel de Mis Compras con Filtros y Ticket Digital QR (CU-01, CU-07, CU-08)
+- **Decisión:**
+  - Pestañas horizontales para filtrar por estado (`TODAS`, `CONFIRMADAS`, `UTILIZADAS`, `CANCELADAS / REEMBOLSADAS`).
+  - Badge dinámico en compras confirmadas: *"Faltan X días para el evento"* con cálculo relativo de fechas.
+  - Componente `TicketQRModal` con estilo de boleto perforado clásico y renderizado de código QR simulado para validación en puerta.
+  - Botón de reembolso directo con modal de confirmación, validando del lado cliente y backend que la entrada no haya sido `UTILIZADA` y que el evento aún no haya tenido lugar (**CU-07, CU-08**).
+
+### 10.3. Panel de Control de Ventas del Organizador (`EventSalesScreen` - CU-02)
+- **Decisión:** 
+  - Pantalla dedicada conectada a `GET /api/eventos/:id/compras` accesible desde `MyEventsScreen`.
+  - Tarjetas de resumen con ingresos totales acumulados, total de entradas vendidas y porcentaje de ocupación global.
+  - Desglose por sector (General, Platea, VIP) con barras de progreso visual de cupo vendido vs disponible.
+  - Lista de asistentes con botón de validación en puerta que ejecuta `PATCH /api/compras/:id/estado` (`UTILIZADA`) y acceso directo al canal de chat con el comprador.
+
+### 10.4. Mensajería Instantánea en Compra con Polling y Bloqueo de Estado (CU-05, CU-06)
+- **Decisión:**
+  - `ChatScreen` con actualización periódica mediante polling cada 4000ms (`setInterval` con cleanup en `useEffect`) y pull-to-refresh (Clase 10).
+  - Burbujas de mensaje con diferenciación visual clara: emisor en verde primario alineado a la derecha, receptor en blanco/borde a la izquierda con etiqueta de rol (`Comprador` u `Organizador`).
+  - Detección y bloqueo automático de envío si la compra se encuentra en estado `CANCELADA` o `REEMBOLSADA`, mostrando un banner informativo en lugar del input de texto.
+
+### 10.5. Sistema de Reseñas Calificadas (CU-09)
+- **Decisión:**
+  - `ReviewModal` con selector táctil interactivo de 1 a 5 estrellas y área de texto para comentarios.
+  - Habilitado exclusivamente cuando la compra se encuentra en estado `UTILIZADA`. Si ya fue calificada o no fue utilizada, la acción se inhabilita protegiendo la reputación histórica del organizador.
+
 
 

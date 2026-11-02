@@ -15,6 +15,7 @@ import MyEventsScreen from "../screens/MyEventsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import MyPurchasesScreen from "../screens/MyPurchasesScreen";
 import EventSalesScreen from "../screens/EventSalesScreen";
+import ChatScreen from "../screens/ChatScreen";
 import { colors } from "../theme/theme";
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,7 @@ function ExploreStack() {
     >
       <ExploreStackNav.Screen name="ExploreHome" component={ExploreScreen} />
       <ExploreStackNav.Screen name="EventDetail" component={EventDetailScreen} />
+      <ExploreStackNav.Screen name="Chat" component={ChatScreen} />
     </ExploreStackNav.Navigator>
   );
 }
@@ -47,6 +49,7 @@ function PurchasesStack() {
     >
       <PurchasesStackNav.Screen name="MyPurchasesHome" component={MyPurchasesScreen} />
       <PurchasesStackNav.Screen name="EventDetail" component={EventDetailScreen} />
+      <PurchasesStackNav.Screen name="Chat" component={ChatScreen} />
     </PurchasesStackNav.Navigator>
   );
 }
@@ -63,6 +66,7 @@ function OrganizerStack() {
       <OrganizerStackNav.Screen name="EventDetail" component={EventDetailScreen} />
       <OrganizerStackNav.Screen name="CreateEvent" component={CreateEventScreen} />
       <OrganizerStackNav.Screen name="EventSales" component={EventSalesScreen} />
+      <OrganizerStackNav.Screen name="Chat" component={ChatScreen} />
     </OrganizerStackNav.Navigator>
   );
 }

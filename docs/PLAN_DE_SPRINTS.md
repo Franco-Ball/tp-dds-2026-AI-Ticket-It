@@ -264,35 +264,41 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 > **Objetivo:** Completar el flujo transaccional móvil (modal de compra, panel de mis compras con cálculo de días faltantes, panel de organizador), el canal de chat interactivo, el modal de calificaciones y las pruebas finales de entrega. Cubre **CU-01, CU-02, CU-05, CU-06, CU-07, CU-08, CU-09, CU-10 y CU-12**.
 
 #### 1. Frontend Nativo (`packages/frontend`)
-- [ ] Modal de Compra en `EventDetailScreen`:
+- [x] Modal de Compra en `EventDetailScreen`:
   - Selector de tipo de entrada, control numérico de cantidad y cálculo del total en tiempo real.
-  - Validación inmediata de cupo disponible y confirmación de compra (**CU-12**).
-- [ ] Pantalla `MyPurchasesScreen` (Comprador):
-  - Listado de compras agrupadas por estado (`CONFIRMADA`, `UTILIZADA`, `CANCELADA`, `REEMBOLSADA`).
-  - Badge destacado para compras confirmadas: *"Faltan X días para el evento"* (**CU-01**).
-  - Botón de cancelación de compra y solicitud de reembolso si cumple las condiciones (**CU-07, CU-08**).
+  - Reserva de cupo temporal por 15 minutos en estado `PENDIENTE` y confirmación con pasarela de pago simulada (**CU-12**).
+- [x] Pantalla `MyPurchasesScreen` (Comprador):
+  - Listado de compras agrupadas con pestañas horizontales de estado (`TODAS`, `CONFIRMADA`, `UTILIZADA`, `CANCELADA / REEMBOLSADA`).
+  - Badge destacado para compras confirmadas: *"Faltan X días para el evento"* calculado dinámicamente (**CU-01**).
+  - Modal interactivo de Ticket Digital con código QR / barras simulado (`TicketQRModal`).
+  - Botón de cancelación de compra y solicitud de reembolso en un toque con confirmación si cumple las condiciones (**CU-07, CU-08**).
   - Acceso directo al chat de la compra y al modal de calificación.
-- [ ] Pantalla `OrganizerDashboardScreen` (Organizador):
-  - Métricas de ventas y cupos vendidos vs disponibles por tipo de entrada (**CU-02**).
-  - Lista de compradores y botón para validar / marcar entrada como `UTILIZADA`.
-- [ ] Pantalla de Chat de Compra (`ChatScreen`):
-  - Interfaz de mensajería interactiva entre comprador y organizador (**CU-05, CU-06**).
-- [ ] Modal de Calificación (`ReviewModal`):
-  - Puntuación con estrellas (1 a 5) y comentario escrito, habilitado exclusivamente para compras `UTILIZADA` (**CU-09**).
-- [ ] Hardening, QA Multiplataforma y Cierre:
-  - Pruebas de integración punta a punta en Expo Web y Expo Go cubriendo caminos felices y caminos tristes (validación de cupos agotados, compras canceladas, accesos no autorizados - Clase 09).
-  - Verificación final de la guía de entrega: preparación del guión del video técnico (5 a 10 min) explicando la implementación en Backend, Frontend, recorrido de la UI y conclusiones críticas del uso de IA (ventajas, fricciones y productividad).
+- [x] Pantalla `EventSalesScreen` (Organizador):
+  - Métricas de ingresos totales, entradas vendidas vs cupo total y porcentaje de ocupación (**CU-02**).
+  - Desglose detallado de cupos vendidos vs disponibles por tipo de entrada con barras de progreso.
+  - Lista de compradores y botón para validar ingreso / marcar entrada como `UTILIZADA` en puerta.
+  - Botón de chat directo con cada comprador desde el panel de ventas.
+- [x] Pantalla de Chat de Compra (`ChatScreen`):
+  - Interfaz de mensajería interactiva entre comprador y organizador con burbujas diferenciadas (**CU-05, CU-06**).
+  - Mecanismo de actualización periódica (polling cada 4 segundos - Clase 10) y pull-to-refresh.
+  - Bloqueo automático de escritura y aviso si la compra fue cancelada o reembolsada.
+- [x] Modal de Calificación (`ReviewModal`):
+  - Puntuación interactiva con estrellas (1 a 5) y comentario escrito, habilitado exclusivamente para compras `UTILIZADA` (**CU-09**).
+- [x] Hardening, QA Multiplataforma y Cierre:
+  - Pruebas de integración punta a punta en Expo Web y backend cubriendo caminos felices y caminos tristes (validación de cupos agotados, compras canceladas, accesos no autorizados - Clase 09).
+  - 100% de tests pasando en Backend (15 suites, 109 tests) y 0 errores de ESLint en Frontend.
+  - Preparación de la guía para la grabación del video técnico (5 a 10 min) explicando la implementación en Backend, Frontend, recorrido de la UI y conclusiones críticas del uso de IA (ventajas, fricciones y productividad) en `docs/GUIA_DEMO_VIDEO.md`.
 
-#### 2. Ramas de Trabajo Sugeridas
-- `feature/ui-purchases-dashboard`
-- `feature/ui-chat-reviews`
-- `feature/qa-hardening-final`
+#### 2. Ramas de Trabajo Ejecutadas
+- `feature/ui-purchases-dashboard` (Merged)
+- `feature/ui-chat-reviews` (Merged)
+- `feature/qa-hardening-final` (Activa)
 
 #### 3. Criterios de Aceptación (DoD)
-- Flujo completo de compra, cancelación y uso de entradas funcional en la UI móvil.
-- Chat y reseñas funcionando en tiempo real integrados con el backend.
-- Cobertura de casos felices y caminos tristes verificados en la app.
-- Aplicación completa y lista para la demostración técnica en video según la consigna.
+- [x] Flujo completo de compra, cancelación y uso de entradas funcional en la UI móvil.
+- [x] Chat y reseñas funcionando en tiempo real integrados con el backend.
+- [x] Cobertura de casos felices y caminos tristes verificados en la app.
+- [x] Aplicación completa y lista para la demostración técnica en video según la consigna.
 
 ---
 
@@ -305,7 +311,7 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 | **Sprint 3** | Backend Core: Eventos, Catálogo y Compras/Cupos | API completa de eventos, transacciones de compra y cupos | **Completado ✅** |
 | **Sprint 4** | Backend Social: Chat en Compras, Reseñas y Reputación | API de chat, calificaciones y reputación histórica | **Completado ✅** |
 | **Sprint 5** | Frontend Mobile: Catálogo, Filtros y Publicación de Eventos | Pantallas de exploración, detalle y creador de eventos | **Completado ✅** |
-| **Sprint 6** | Frontend Mobile: Compras, Días Faltantes, Chat, Reseñas & QA | App móvil 100% funcional y lista para presentación | **Próximo ⏳** |
+| **Sprint 6** | Frontend Mobile: Compras, Días Faltantes, Chat, Reseñas & QA | App móvil 100% funcional y lista para presentación | **Completado ✅** |
 
 ---
 

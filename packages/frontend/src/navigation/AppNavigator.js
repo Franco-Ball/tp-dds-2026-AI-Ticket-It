@@ -13,13 +13,15 @@ import EventDetailScreen from "../screens/EventDetailScreen";
 import CreateEventScreen from "../screens/CreateEventScreen";
 import MyEventsScreen from "../screens/MyEventsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import PlaceholderScreen from "../screens/PlaceholderScreen";
+import MyPurchasesScreen from "../screens/MyPurchasesScreen";
+import EventSalesScreen from "../screens/EventSalesScreen";
 import { colors } from "../theme/theme";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const ExploreStackNav = createNativeStackNavigator();
 const OrganizerStackNav = createNativeStackNavigator();
+const PurchasesStackNav = createNativeStackNavigator();
 
 function ExploreStack() {
   return (
@@ -35,6 +37,20 @@ function ExploreStack() {
   );
 }
 
+function PurchasesStack() {
+  return (
+    <PurchasesStackNav.Navigator
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <PurchasesStackNav.Screen name="MyPurchasesHome" component={MyPurchasesScreen} />
+      <PurchasesStackNav.Screen name="EventDetail" component={EventDetailScreen} />
+    </PurchasesStackNav.Navigator>
+  );
+}
+
 function OrganizerStack() {
   return (
     <OrganizerStackNav.Navigator
@@ -46,6 +62,7 @@ function OrganizerStack() {
       <OrganizerStackNav.Screen name="MyEventsHome" component={MyEventsScreen} />
       <OrganizerStackNav.Screen name="EventDetail" component={EventDetailScreen} />
       <OrganizerStackNav.Screen name="CreateEvent" component={CreateEventScreen} />
+      <OrganizerStackNav.Screen name="EventSales" component={EventSalesScreen} />
     </OrganizerStackNav.Navigator>
   );
 }
@@ -74,15 +91,10 @@ function BuyerTabs() {
       />
       <Tab.Screen
         name="PurchasesTab"
-        component={PlaceholderScreen}
-        initialParams={{
-          title: "Mis Compras y Entradas",
-          sprint: "Sprint 6",
-          description: "Visualización de entradas adquiridas, estado de reserva, días faltantes y reembolsos.",
-        }}
+        component={PurchasesStack}
         options={{
           title: "Mis Compras",
-          headerTitle: "Mis Compras",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Feather name="shopping-bag" size={size} color={color} />,
         }}
       />

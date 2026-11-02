@@ -8,8 +8,6 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
-  Modal,
-  Pressable,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -20,7 +18,6 @@ import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import EmptyState from "../components/ui/EmptyState";
 import Badge from "../components/ui/Badge";
-import Button from "../components/ui/Button";
 import { colors, spacing, borderRadius, shadows } from "../theme/theme";
 
 const DEFAULT_IMAGE =
@@ -34,10 +31,6 @@ export default function MyEventsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-
-  // Modal explicativo de gestión de ventas (Sprint 6 - CU-02)
-  const [metricsModalVisible, setMetricsModalVisible] = useState(false);
-  const [selectedEventForMetrics, setSelectedEventForMetrics] = useState(null);
 
   const cargarMisEventos = useCallback(async (isRefresh = false) => {
     if (!user?.id) return;
@@ -89,11 +82,6 @@ export default function MyEventsScreen() {
     } catch {
       return "Fecha a confirmar";
     }
-  };
-
-  const abrirGestionVentas = (ev) => {
-    setSelectedEventForMetrics(ev);
-    setMetricsModalVisible(true);
   };
 
   const renderHeader = () => (
@@ -217,12 +205,17 @@ export default function MyEventsScreen() {
 
                       <TouchableOpacity
                         style={styles.salesBtn}
-                        onPress={() => abrirGestionVentas(item)}
+                        onPress={() =>
+                          navigation.navigate("EventSales", {
+                            eventoId: item.id,
+                            evento: item,
+                          })
+                        }
                         accessibilityRole="button"
                         accessibilityLabel="Gestionar ventas y cupos"
                       >
                         <Feather name="bar-chart-2" size={14} color={colors.primaryDark} />
-                        <Text style={styles.salesBtnText}>Ventas (CU-02)</Text>
+                        <Text style={styles.salesBtnText}>Ventas y Cupos</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -239,71 +232,6 @@ export default function MyEventsScreen() {
             contentContainerStyle={styles.listContent}
           />
         )}
-
-        {/* Modal de Información de Ventas (CU-02 preview para Sprint 6) */}
-        <Modal
-          visible={metricsModalVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setMetricsModalVisible(false)}
-        >
-          <Pressable
-            style={styles.modalBackdrop}
-            onPress={() => setMetricsModalVisible(false)}
-          >
-            <Pressable style={styles.modalSheet} onPress={(e) => e.stopPropagation()}>
-              <View style={styles.modalHeader}>
-                <View style={styles.modalIconCircle}>
-                  <Feather name="bar-chart-2" size={20} color={colors.organizador} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.modalTitle}>Panel de Ventas (CU-02)</Text>
-                  <Text style={styles.modalEventName} numberOfLines={1}>
-                    {selectedEventForMetrics?.nombre}
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => setMetricsModalVisible(false)}
-                  style={styles.modalCloseBtn}
-                >
-                  <Feather name="x" size={18} color={colors.textMuted} />
-                </TouchableOpacity>
-              </View>
-
-              <Text style={styles.modalNotice}>
-                En el **Sprint 6**, este panel se conectará con el endpoint{" "}
-                `GET /api/eventos/:id/compras` para mostrar:
-              </Text>
-
-              <View style={styles.featuresList}>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={colors.primaryDark} />
-                  <Text style={styles.featureText}>
-                    Desglose de compras confirmadas, pendientes y reembolsadas.
-                  </Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={colors.primaryDark} />
-                  <Text style={styles.featureText}>
-                    Métricas de cupos vendidos vs disponibles por cada tipo de entrada.
-                  </Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={colors.primaryDark} />
-                  <Text style={styles.featureText}>
-                    Botón de escaneo y validación en puerta (`UTILIZADA`).
-                  </Text>
-                </View>
-              </View>
-
-              <Button
-                title="Entendido (Listo para Sprint 6)"
-                onPress={() => setMetricsModalVisible(false)}
-                variant="primary"
-              />
-            </Pressable>
-          </Pressable>
-        </Modal>
       </View>
     </SafeAreaView>
   );

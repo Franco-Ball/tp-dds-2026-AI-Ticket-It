@@ -9,3 +9,4 @@ export const chatService = {
     return api.post(`/compras/${compraId}/mensajes`, { mensaje });
   },
 };
+

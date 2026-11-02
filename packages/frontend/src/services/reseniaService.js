@@ -13,3 +13,4 @@ export const reseniaService = {
     return api.get(`/organizadores/${organizadorId}/resenias`);
   },
 };
+

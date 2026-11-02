@@ -25,3 +25,4 @@ export const compraService = {
     return api.get(`/compras/${compraId}`);
   },
 };
+

@@ -1,6 +1,7 @@
 {
   "name": "dds-repo-base",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "workspaces": [
     "packages/*"
@@ -10,6 +11,10 @@
     "dev:backend": "npm run dev --workspace=backend",
     "test:backend": "npm test --workspace=backend",
     "test": "npm run test:backend",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "build:e2e": "cd packages/frontend && npx expo export -p web --no-minify",
     "start:frontend": "npm start --workspace=frontend",
     "start:web": "npm run web --workspace=frontend",
     "start:android": "npm run android --workspace=frontend",
@@ -24,6 +29,7 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.31.0",
+    "@playwright/test": "^1.64.1",
     "concurrently": "^9.2.0",
     "eslint": "^9.31.0",
     "eslint-plugin-react": "^7.37.5",

@@ -306,12 +306,12 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 > **Objetivo:** Implementar una suite de pruebas automatizadas de punta a punta (E2E) con Playwright que simule la interacción real de un usuario sobre la interfaz de Expo Web interactuando con la API en vivo de Node.js/Express. Cubre la verificación automatizada de los 12 Casos de Uso, garantizando la integridad de caminos felices y resiliencia ante caminos tristes.
 
 #### 1. Infraestructura y Automatización E2E (`e2e/`)
-- [ ] Configuración de **Playwright** en el monorepo (`playwright.config.js`):
-  - Orquestación automática de servidores: Backend en `:3000` y Expo Web en `:8081`.
+- [x] Configuración de **Playwright** en el monorepo (`playwright.config.js`):
+  - Orquestación automática de servidores: Backend en `:8000` y Expo Web en `:8081`.
   - Modo headless para CI y soporte de ejecución con UI (`npm run test:e2e:ui`).
-- [ ] Page Object Models (POMs) para selectores limpios y accesibles (Clase 09 - WCAG):
-  - `AuthPage`, `ExplorePage`, `EventDetailPage`, `PurchasesPage`, `OrganizerSalesPage`, `ChatPage`.
-- [ ] Suites de Pruebas E2E Automatizadas:
+- [x] Page Object Models & Helpers para selectores limpios y accesibles (Clase 09 - WCAG):
+  - Helpers de autenticación robustos (`loginAs`, `logout`) y navegación de roles en `e2e/helpers/auth.js`.
+- [x] Suites de Pruebas E2E Automatizadas (14 tests cubriendo los 12 CUs):
   - **E2E-01 (Auth & Roles):** Registro, login de Comprador y Organizador, redirección contextual a sus respectivos tabs y validación de credenciales inválidas.
   - **E2E-02 (Catálogo & Filtros):** Búsqueda con debounce, filtrado por categoría y modal de ordenamiento por precio/fecha (**CU-03, CU-11**).
   - **E2E-03 (Publicación de Evento):** Creación de evento con múltiples tipos de entrada por Organizador e impacto en catálogo (**CU-04**).
@@ -325,10 +325,10 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 - `feature/e2e-docs-final`
 
 #### 3. Criterios de Aceptación (DoD)
-- [ ] Comando único `npm run test:e2e` que levanta los servicios y ejecuta las specs sin fallos.
-- [ ] 100% de los escenarios E2E pasando exitosamente en modo headless.
-- [ ] Cobertura de caminos felices y caminos tristes integrada en la pirámide de testing.
-- [ ] Documentación y matriz de trazabilidad actualizada en `PLAN_DE_SPRINTS.md` y `DECISIONES_DE_DISENO.md`.
+- [x] Comando único `npm run test:e2e` que levanta los servicios y ejecuta las specs sin fallos.
+- [x] 100% de los escenarios E2E pasando exitosamente en modo headless (14/14 pasando en < 20s).
+- [x] Cobertura de caminos felices y caminos tristes integrada en la pirámide de testing.
+- [x] Documentación y matriz de trazabilidad actualizada en `PLAN_DE_SPRINTS.md` y `DECISIONES_DE_DISENO.md`.
 
 ---
 
@@ -342,7 +342,7 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
 | **Sprint 4** | Backend Social: Chat en Compras, Reseñas y Reputación | API de chat, calificaciones y reputación histórica | **Completado ✅** |
 | **Sprint 5** | Frontend Mobile: Catálogo, Filtros y Publicación de Eventos | Pantallas de exploración, detalle y creador de eventos | **Completado ✅** |
 | **Sprint 6** | Frontend Mobile: Compras, Días Faltantes, Chat, Reseñas & QA | App móvil 100% funcional y lista para presentación | **Completado ✅** |
-| **Sprint 7** | Automatización E2E: Playwright, Flujos Críticos & Caminos Tristes | Suite E2E completa de punta a punta cubriendo los 12 CUs | **En Progreso ⏳** |
+| **Sprint 7** | Automatización E2E: Playwright, Flujos Críticos & Caminos Tristes | Suite E2E completa de punta a punta cubriendo los 12 CUs | **Completado ✅** |
 
 ---
 

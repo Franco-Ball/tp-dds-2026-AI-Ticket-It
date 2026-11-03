@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
   Alert,
+  Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -146,10 +147,16 @@ export default function EventDetailScreen() {
       return;
     }
     if (isOrganizador) {
-      Alert.alert(
-        "Perfil de Organizador",
-        "Las cuentas con rol de Organizador no pueden adquirir entradas. Utiliza una cuenta de Comprador."
-      );
+      if (Platform.OS === "web" && typeof window !== "undefined") {
+        window.alert(
+          "Perfil de Organizador: Las cuentas con rol de Organizador no pueden adquirir entradas. Utiliza una cuenta de Comprador."
+        );
+      } else {
+        Alert.alert(
+          "Perfil de Organizador",
+          "Las cuentas con rol de Organizador no pueden adquirir entradas. Utiliza una cuenta de Comprador."
+        );
+      }
       return;
     }
     setPurchaseStep(1);

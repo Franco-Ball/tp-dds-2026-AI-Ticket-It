@@ -260,10 +260,23 @@ export class CompraService {
       };
     });
 
+    const totalCupoDisponible = cuposPorTipoEntrada.reduce((sum, c) => sum + (c.cupoDisponible || 0), 0);
+
     return {
       eventoId: evento.id,
       nombreEvento: evento.nombre,
       fechaEvento: evento.fecha,
+      evento: {
+        id: evento.id,
+        nombre: evento.nombre,
+        fecha: evento.fecha,
+        descripcion: evento.descripcion,
+      },
+      resumen: {
+        totalRecaudado,
+        totalEntradasVendidas,
+        totalCupoDisponible,
+      },
       cuposPorTipoEntrada,
       totalRecaudado,
       totalEntradasVendidas,

@@ -9,6 +9,7 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { reseniaService } from "../../services/reseniaService";
@@ -39,21 +40,28 @@ export default function ReviewModal({ visible, compra, onClose, onSuccess }) {
         detalle: detalle.trim(),
       });
 
-      Alert.alert(
-        "¡Reseña Publicada!",
-        "Tu calificación y comentario fueron registrados con éxito. Ahora son visibles en el catálogo y perfil del organizador.",
-        [
-          {
-            text: "Aceptar",
-            onPress: () => {
-              setDetalle("");
-              setPuntuacion(5);
-              onClose();
-              if (onSuccess) onSuccess();
+      if (Platform.OS === "web") {
+        setDetalle("");
+        setPuntuacion(5);
+        onClose();
+        if (onSuccess) onSuccess();
+      } else {
+        Alert.alert(
+          "¡Reseña Publicada!",
+          "Tu calificación y comentario fueron registrados con éxito. Ahora son visibles en el catálogo y perfil del organizador.",
+          [
+            {
+              text: "Aceptar",
+              onPress: () => {
+                setDetalle("");
+                setPuntuacion(5);
+                onClose();
+                if (onSuccess) onSuccess();
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
+      }
     } catch (err) {
       setErrorMsg(err?.message || "No se pudo publicar la reseña");
     } finally {

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -210,21 +211,25 @@ export default function CreateEventScreen() {
 
       await eventoService.crearEvento(payload);
 
-      Alert.alert(
-        "¡Evento Publicado con Éxito!",
-        `El evento '${nombre}' ya se encuentra disponible en el catálogo con ${capacidadTotal} entradas en venta.`,
-        [
-          {
-            text: "Ver mis eventos",
-            onPress: () => {
-              // Limpiar y volver a la lista
-              setNombre("");
-              setDescripcion("");
-              navigation.navigate("EventsTab");
+      setNombre("");
+      setDescripcion("");
+
+      if (Platform.OS === "web") {
+        navigation.navigate("EventsTab");
+      } else {
+        Alert.alert(
+          "¡Evento Publicado con Éxito!",
+          `El evento '${nombre}' ya se encuentra disponible en el catálogo con ${capacidadTotal} entradas en venta.`,
+          [
+            {
+              text: "Ver mis eventos",
+              onPress: () => {
+                navigation.navigate("EventsTab");
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
+      }
     } catch (err) {
       setErrorMsg(err?.message || "Ocurrió un error al publicar el evento.");
     } finally {

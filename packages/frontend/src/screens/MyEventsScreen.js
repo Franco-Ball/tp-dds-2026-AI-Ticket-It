@@ -10,7 +10,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { useAuth } from "../context/AuthContext";
 import { eventoService } from "../services/eventoService";
@@ -52,9 +52,11 @@ export default function MyEventsScreen() {
     }
   }, [user?.id]);
 
-  useEffect(() => {
-    cargarMisEventos();
-  }, [cargarMisEventos]);
+  useFocusEffect(
+    useCallback(() => {
+      cargarMisEventos();
+    }, [cargarMisEventos])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -212,7 +214,7 @@ export default function MyEventsScreen() {
                           })
                         }
                         accessibilityRole="button"
-                        accessibilityLabel="Gestionar ventas y cupos"
+                        accessibilityLabel={`Gestionar ventas y cupos: ${item.nombre}`}
                       >
                         <Feather name="bar-chart-2" size={14} color={colors.primaryDark} />
                         <Text style={styles.salesBtnText}>Ventas y Cupos</Text>

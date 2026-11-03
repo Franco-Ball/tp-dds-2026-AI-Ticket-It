@@ -124,7 +124,14 @@ export default function EventSalesScreen() {
     );
   }
 
-  const { evento, resumen, cuposPorTipoEntrada, compras } = salesData;
+  const evento = salesData?.evento || route.params?.evento || { id: salesData?.eventoId || eventoId, nombre: salesData?.nombreEvento || "Evento" };
+  const resumen = salesData?.resumen || {
+    totalRecaudado: salesData?.totalRecaudado || 0,
+    totalEntradasVendidas: salesData?.totalEntradasVendidas || 0,
+    totalCupoDisponible: (salesData?.cuposPorTipoEntrada || []).reduce((acc, t) => acc + (t.cupoDisponible || 0), 0),
+  };
+  const cuposPorTipoEntrada = salesData?.cuposPorTipoEntrada || [];
+  const compras = salesData?.compras || [];
 
   const comprasFiltradas = (compras || []).filter((c) => {
     if (statusFilter === "TODAS") return true;

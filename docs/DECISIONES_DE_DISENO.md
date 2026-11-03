@@ -359,5 +359,40 @@ stateDiagram-v2
   - `ReviewModal` con selector táctil interactivo de 1 a 5 estrellas y área de texto para comentarios.
   - Habilitado exclusivamente cuando la compra se encuentra en estado `UTILIZADA`. Si ya fue calificada o no fue utilizada, la acción se inhabilita protegiendo la reputación histórica del organizador.
 
+---
+
+## 11. Decisiones de Diseño de Pruebas End-to-End (Sprint 7)
+
+### 11.1. Pirámide de Testing y Estrategia E2E Multiplataforma
+- **Decisión:** Implementar la capa superior de la Pirámide de Testing (E2E) utilizando **Playwright** sobre la distribución Web de Expo (`@expo/metro-runtime` y React Native Web) conectada a la API viva de Node.js Express.
+- **Fundamento:** 
+  - La pirámide del proyecto cuenta ahora con:
+    1. **Pruebas Unitarias de Dominio (Jest):** Verifican las invariantes de negocio de las entidades (`Compra`, `Evento`, `TipoEntrada`, `Resenia`, `Mensaje`).
+    2. **Pruebas de Integración (Supertest + Jest):** Verifican los endpoints HTTP, middlewares de autenticación JWT y persistencia en memoria.
+    3. **Pruebas End-to-End (Playwright):** Simulan el comportamiento real del usuario final en el navegador Chromium, validando la interacción de los 12 Casos de Uso del sistema de punta a punta.
+
+### 11.2. Servidor Estático de Cero Dependencias con Fallback SPA (`scripts/serve-frontend.js`)
+- **Decisión:** Desarrollar un mini-servidor HTTP nativo en Node.js para servir el directorio `packages/frontend/dist` en el puerto `8081` con soporte de fallback a `index.html` para el routing del cliente.
+- **Fundamento:** Evita dependencias pesadas como `serve` o `http-server`, garantizando tiempos de arranque inmediatos (<100ms) y compatibilidad total con CI/CD y entornos aislados.
+
+### 11.3. Orquestación Automatizada y Modo Headless (`playwright.config.js`)
+- **Decisión:** Configurar Playwright para orquestar automáticamente los dos servidores (Backend en puerto `8000` y Frontend Web en puerto `8081`) utilizando `reuseExistingServer: true`.
+- **Fundamento:** Permite tanto la ejecución local instantánea (reutilizando servidores ya levantados durante el desarrollo activo) como la ejecución desatendida y reproducible en pipelines de integración continua.
+
+### 11.4. Resiliencia de Selectores Accesibles WCAG (Clase 09)
+- **Decisión:** Evitar selectores CSS frágiles atados a clases generadas automáticamente por React Native Web. En su lugar, basar todas las aserciones y localizadores en roles semánticos (`role="button"`, `role="dialog"`), etiquetas accesibles (`aria-label`, `accessibilityLabel`) y contenido textual visible al usuario.
+- **Fundamento:** Garantiza que las pruebas E2E no solo verifiquen la funcionalidad técnica sino también la accesibilidad real de la aplicación, manteniéndose inmunes a refactorizaciones visuales de estilos.
+
+### 11.5. Matriz de Cobertura E2E de los 12 Casos de Uso (CU-01 a CU-12)
+| Test Spec | Escenarios E2E | Casos de Uso Validados |
+| :--- | :--- | :--- |
+| `01-auth-navigation.spec.js` | Login exitoso de Comprador y Organizador, rechazo de credenciales inválidas, redirección contextual de pestañas | Auth, Roles, WCAG |
+| `02-catalog-search-filters.spec.js` | Búsqueda reactiva con debounce de 350ms, filtrado por categorías, ordenamiento por precio en modal | **CU-03, CU-10, CU-11** |
+| `03-organizer-event-creation.spec.js` | Publicación de evento con múltiples sectores/tipos de entrada, validación de fechas e impacto en catálogo | **CU-04** |
+| `04-purchase-checkout-ticket.spec.js` | Checkout interactivo en 2 pasos, retención de cupo en `PENDIENTE`, pago simulado, emisión de Ticket QR con badge de días faltantes | **CU-12, CU-01** |
+| `05-checkin-review-chat.spec.js` | Validación de ingreso en puerta (`UTILIZADA`) por organizador, publicación de calificación de 5 estrellas por comprador y mensajería bidireccional | **CU-02, CU-05, CU-06, CU-09, CU-10** |
+| `06-refund-sad-paths.spec.js` | Solicitud y confirmación de reembolso con restitución de stock, bloqueo de chat en compras finalizadas y restricción de compra a organizadores | **CU-07, CU-08** |
+
+
 
 

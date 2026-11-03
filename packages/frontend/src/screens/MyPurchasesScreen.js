@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { compraService } from "../services/compraService";
 import PurchaseCard from "../components/purchases/PurchaseCard";
@@ -69,9 +69,11 @@ export default function MyPurchasesScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    cargarCompras();
-  }, [cargarCompras]);
+  useFocusEffect(
+    useCallback(() => {
+      cargarCompras();
+    }, [cargarCompras])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);

@@ -5,6 +5,15 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
+    ignores: [
+      "packages/frontend/dist/**",
+      "packages/frontend/.expo/**",
+      "playwright-report/**",
+      "test-results/**",
+      "node_modules/**",
+    ],
+  },
+  {
     files: ["packages/backend/*.{js,mjs,cjs,jsx}"],
     plugins: { js },
     extends: ["js/recommended"],

@@ -62,7 +62,8 @@ Sprint 1: Base Arquitectónica, Modelos en Memoria & Autenticación Backend (Com
           └── Sprint 3: Backend Core — Eventos, Catálogo, Compras, Cupos y Estados (Completado ✅)
                 └── Sprint 4: Backend Social — Chat en Compras, Reseñas y Reputación (Completado ✅)
                       └── Sprint 5: Frontend Mobile — Catálogo, Búsqueda, Filtros y Publicación (Completado ✅)
-                            └── Sprint 6: Frontend Mobile — Compras, Seguimiento, Chat, Reseñas & QA (Próximo ⏳)
+                            └── Sprint 6: Frontend Mobile — Compras, Seguimiento, Chat, Reseñas & QA (Completado ✅)
+                                  └── Sprint 7: Automatización y Pruebas End-to-End E2E (Completado ✅)
 ```
 
 

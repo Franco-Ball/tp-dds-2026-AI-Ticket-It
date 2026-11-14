@@ -82,7 +82,7 @@ export default function ReviewModal({ visible, compra, onClose, onSuccess }) {
             <View style={styles.iconCircle}>
               <Feather name="star" size={24} color="#eab308" />
             </View>
-            <Text style={styles.title}>Calificar Evento (CU-09)</Text>
+            <Text style={styles.title}>Calificar Evento</Text>
             <Text style={styles.subtitle} numberOfLines={2}>
               {evento.nombre || "Espectáculo"}
             </Text>

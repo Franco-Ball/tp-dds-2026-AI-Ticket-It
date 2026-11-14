@@ -1,5 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { colors, borderRadius, shadows } from "../../theme/theme";
 
 export default function Button({
@@ -17,6 +18,16 @@ export default function Button({
   const isOutline = variant === "outline";
   const isDanger = variant === "danger";
   const isSecondary = variant === "secondary";
+
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (typeof icon === "string") {
+      const iconColor = isOutline || isSecondary ? colors.primaryDark : isDanger ? colors.error : "#ffffff";
+      const iconSize = size === "sm" ? 14 : size === "lg" ? 20 : 18;
+      return <Feather name={icon} size={iconSize} color={iconColor} />;
+    }
+    return icon;
+  };
 
   return (
     <TouchableOpacity
@@ -39,7 +50,7 @@ export default function Button({
         <ActivityIndicator color={isOutline || isSecondary ? colors.primary : "#ffffff"} />
       ) : (
         <View style={styles.content}>
-          {icon && <View style={styles.iconWrapper}>{icon}</View>}
+          {icon && <View style={styles.iconWrapper}>{renderIcon()}</View>}
           <Text
             style={[
               styles.textBase,
@@ -73,6 +84,8 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     marginRight: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   // Tamaños
   sm: {

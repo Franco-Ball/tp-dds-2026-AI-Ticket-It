@@ -18,36 +18,11 @@ import { eventoService } from "../services/eventoService";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
+import DateTimePickerModal from "../components/ui/DateTimePickerModal";
 import { colors, spacing, borderRadius } from "../theme/theme";
 
-const IMAGE_PRESETS = [
-  {
-    label: "Recital Rock",
-    icon: "music",
-    url: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    label: "Teatro & Danza",
-    icon: "film",
-    url: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    label: "Festival Electrónica",
-    icon: "sun",
-    url: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    label: "Conferencia Tech",
-    icon: "mic",
-    url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
-  },
-];
-
-const TIER_PRESETS = [
-  { nombre: "Entrada General", precio: "15000", cupoTotal: "100", descripcion: "Acceso a campo general" },
-  { nombre: "Platea Preferencial", precio: "25000", cupoTotal: "50", descripcion: "Ubicación con asiento numerado" },
-  { nombre: "Pase VIP", precio: "45000", cupoTotal: "20", descripcion: "Acceso preferencial y consumición" },
-];
+const DEFAULT_COVER_IMAGE =
+  "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80";
 
 export default function CreateEventScreen() {
   const navigation = useNavigation();
@@ -57,7 +32,7 @@ export default function CreateEventScreen() {
   const [descripcion, setDescripcion] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [fecha, setFecha] = useState("");
-  const [multimediaUrl, setMultimediaUrl] = useState(IMAGE_PRESETS[0].url);
+  const [multimediaUrl, setMultimediaUrl] = useState(DEFAULT_COVER_IMAGE);
 
   // Categorías de la API
   const [categorias, setCategorias] = useState([]);
@@ -76,6 +51,27 @@ export default function CreateEventScreen() {
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showManualDateInput, setShowManualDateInput] = useState(false);
+
+  // Formato legible para la tarjeta de selección
+  const formatearFechaHumana = (isoDate) => {
+    if (!isoDate) return "Seleccionar fecha en el calendario...";
+    try {
+      const d = new Date(isoDate);
+      if (isNaN(d.getTime())) return isoDate;
+      const datePart = d.toLocaleDateString("es-AR", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      const timePart = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} hs`;
+      return `${datePart.charAt(0).toUpperCase() + datePart.slice(1)} · ${timePart}`;
+    } catch {
+      return isoDate;
+    }
+  };
 
   // Cargar categorías disponibles
   useEffect(() => {
@@ -99,18 +95,6 @@ export default function CreateEventScreen() {
     fechaDefecto.setHours(21, 0, 0, 0);
     setFecha(fechaDefecto.toISOString().slice(0, 16));
   }, []);
-
-  // Agregar preset de tipo de entrada
-  const agregarPresetTier = (preset) => {
-    const nuevo = {
-      id: Date.now().toString(),
-      nombre: preset.nombre,
-      precio: Number(preset.precio),
-      cupoTotal: Number(preset.cupoTotal),
-      descripcion: preset.descripcion,
-    };
-    setTiposEntrada((prev) => [...prev, nuevo]);
-  };
 
   // Agregar tipo de entrada personalizado
   const agregarTierPersonalizado = () => {
@@ -289,29 +273,71 @@ export default function CreateEventScreen() {
             })}
           </ScrollView>
 
-          <Text style={styles.label}>Fecha y Hora (ISO o AAAA-MM-DDTHH:mm) *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ej: 2026-11-20T21:00"
-            placeholderTextColor={colors.textSubtle}
-            value={fecha}
-            onChangeText={setFecha}
-            accessibilityLabel="Fecha y hora de realización"
-          />
+          <Text style={styles.label}>Fecha y Hora del Evento *</Text>
 
-          {/* Atajos de fecha */}
-          <View style={styles.quickDateRow}>
-            <Text style={styles.quickDateLabel}>Atajos:</Text>
-            <TouchableOpacity style={styles.quickDateBtn} onPress={() => setFechaRelativa(7)}>
-              <Text style={styles.quickDateBtnText}>+7 días</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickDateBtn} onPress={() => setFechaRelativa(30)}>
-              <Text style={styles.quickDateBtnText}>+1 mes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickDateBtn} onPress={() => setFechaRelativa(60)}>
-              <Text style={styles.quickDateBtnText}>+2 meses</Text>
+          {/* Selector de Calendario y Horario Interactivo */}
+          <TouchableOpacity
+            style={styles.datePickerTrigger}
+            onPress={() => setShowDatePicker(true)}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Abrir calendario para seleccionar fecha y hora"
+          >
+            <View style={styles.datePickerIconBox}>
+              <Feather name="calendar" size={20} color={colors.primaryDark} />
+            </View>
+            <View style={styles.datePickerTextWrapper}>
+              <Text style={styles.datePickerTitle}>
+                {formatearFechaHumana(fecha)}
+              </Text>
+              <Text style={styles.datePickerSubtitle}>
+                Toca para abrir el calendario y seleccionar horario
+              </Text>
+            </View>
+            <View style={styles.datePickerActionBtn}>
+              <Feather name="calendar" size={14} color={colors.primaryDark} />
+              <Text style={styles.datePickerActionText}>Elegir</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Atajos de fecha y opción de edición manual */}
+          <View style={styles.quickDateContainer}>
+            <View style={styles.quickDateRow}>
+              <Text style={styles.quickDateLabel}>Atajos:</Text>
+              <TouchableOpacity style={styles.quickDateBtn} onPress={() => setFechaRelativa(7)}>
+                <Text style={styles.quickDateBtnText}>+7 días</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.quickDateBtn} onPress={() => setFechaRelativa(30)}>
+                <Text style={styles.quickDateBtnText}>+1 mes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.quickDateBtn} onPress={() => setFechaRelativa(60)}>
+                <Text style={styles.quickDateBtnText}>+2 meses</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.manualToggleBtn}
+              onPress={() => setShowManualDateInput((prev) => !prev)}
+            >
+              <Feather name="edit-2" size={11} color={colors.textMuted} />
+              <Text style={styles.manualToggleText}>
+                {showManualDateInput ? "Ocultar texto" : "Escribir texto"}
+              </Text>
             </TouchableOpacity>
           </View>
+
+          {showManualDateInput && (
+            <View style={styles.manualDateBox}>
+              <TextInput
+                style={styles.inputSmall}
+                placeholder="AAAA-MM-DDTHH:mm"
+                placeholderTextColor={colors.textSubtle}
+                value={fecha}
+                onChangeText={setFecha}
+                accessibilityLabel="Fecha y hora de realización manual"
+              />
+            </View>
+          )}
 
           <Text style={styles.label}>Descripción del Espectáculo *</Text>
           <TextInput
@@ -329,31 +355,7 @@ export default function CreateEventScreen() {
         {/* 2. Portada e Imagen Multimedia */}
         <Card style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>2. Imagen de Portada</Text>
-          <Text style={styles.sublabel}>Elige una plantilla lista o ingresa una URL personalizada:</Text>
-
-          {/* Presets de imágenes */}
-          <View style={styles.presetsGrid}>
-            {IMAGE_PRESETS.map((p) => {
-              const isSelected = multimediaUrl === p.url;
-              return (
-                <TouchableOpacity
-                  key={p.label}
-                  style={[styles.presetCard, isSelected && styles.presetCardActive]}
-                  onPress={() => setMultimediaUrl(p.url)}
-                  activeOpacity={0.7}
-                >
-                  <Feather
-                    name={p.icon}
-                    size={16}
-                    color={isSelected ? colors.primaryDark : colors.textMuted}
-                  />
-                  <Text style={[styles.presetText, isSelected && styles.presetTextActive]}>
-                    {p.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <Text style={styles.sublabel}>Ingresa la URL directa de la imagen del espectáculo (opcional):</Text>
 
           <Text style={styles.label}>URL directa de la imagen</Text>
           <TextInput
@@ -377,21 +379,6 @@ export default function CreateEventScreen() {
               </Text>
             </View>
             <Badge label={`Total: ${capacidadTotal} cupos`} variant="primary" />
-          </View>
-
-          {/* Atajos para agregar niveles estándar */}
-          <Text style={styles.label}>Agregar Plantilla Rápida:</Text>
-          <View style={styles.tierPresetRow}>
-            {TIER_PRESETS.map((preset) => (
-              <TouchableOpacity
-                key={preset.nombre}
-                style={styles.tierPresetBtn}
-                onPress={() => agregarPresetTier(preset)}
-              >
-                <Feather name="plus" size={13} color={colors.primaryDark} />
-                <Text style={styles.tierPresetBtnText}>{preset.nombre}</Text>
-              </TouchableOpacity>
-            ))}
           </View>
 
           {/* Lista de entradas añadidas */}
@@ -490,11 +477,19 @@ export default function CreateEventScreen() {
             title="Publicar Evento Oficial"
             onPress={handleSubmit}
             loading={submitting}
-            icon="upload-cloud"
+            icon={<Feather name="upload-cloud" size={18} color="#ffffff" />}
             variant="primary"
           />
         </View>
       </ScrollView>
+
+      {/* Modal de Calendario y Horario */}
+      <DateTimePickerModal
+        visible={showDatePicker}
+        initialDate={fecha}
+        onConfirm={(nuevaFecha) => setFecha(nuevaFecha)}
+        onClose={() => setShowDatePicker(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -638,63 +633,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.primaryDark,
   },
-  presetsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  presetCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: 6,
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceAlt,
-    gap: 6,
-  },
-  presetCardActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryLight,
-  },
-  presetText: {
-    fontSize: 12,
-    color: colors.text,
-    fontWeight: "600",
-  },
-  presetTextActive: {
-    color: colors.primaryDark,
-    fontWeight: "700",
-  },
   tiersCardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: spacing.xs,
-  },
-  tierPresetRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-  },
-  tierPresetBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryLight,
-    gap: 4,
-  },
-  tierPresetBtnText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.primaryDark,
   },
   tiersAddedList: {
     gap: spacing.xs,
@@ -781,5 +724,74 @@ const styles = StyleSheet.create({
   },
   submitWrapper: {
     marginTop: spacing.sm,
+  },
+  datePickerTrigger: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    marginTop: 2,
+    marginBottom: 4,
+  },
+  datePickerIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing.sm,
+  },
+  datePickerTextWrapper: {
+    flex: 1,
+  },
+  datePickerTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: colors.text,
+  },
+  datePickerSubtitle: {
+    fontSize: 11,
+    color: colors.textMuted,
+    marginTop: 1,
+  },
+  datePickerActionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: borderRadius.sm,
+  },
+  datePickerActionText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.primaryDark,
+  },
+  quickDateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 4,
+  },
+  manualToggleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  },
+  manualToggleText: {
+    fontSize: 11,
+    color: colors.textMuted,
+    fontWeight: "600",
+  },
+  manualDateBox: {
+    marginTop: spacing.xs,
   },
 });

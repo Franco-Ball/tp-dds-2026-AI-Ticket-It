@@ -15,7 +15,7 @@ test.describe("E2E Suite E: Puerta, Calificación y Mensajería de Chat (CU-02, 
     await ventasBtn.click();
 
     // Verificar panel de ventas del evento
-    await expect(page.locator("text=Panel de Ventas (CU-02)").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=Panel de Ventas").first()).toBeVisible({ timeout: 10000 });
 
     // Buscar una compra confirmada y presionar "Validar Acceso (Puerta)"
     const validateBtn = page.locator("text=Validar Acceso (Puerta)").first();
@@ -45,12 +45,12 @@ test.describe("E2E Suite E: Puerta, Calificación y Mensajería de Chat (CU-02, 
     await usedTab.click();
 
     // Buscar botón de calificar
-    const reviewBtn = page.locator("text=Calificar (CU-09)").first();
+    const reviewBtn = page.locator("text=Calificar").first();
     if (await reviewBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await reviewBtn.click();
 
       // Modal de reseña
-      await expect(page.locator("text=Calificar Evento (CU-09)")).toBeVisible({ timeout: 5000 });
+      await expect(page.locator("text=Calificar Evento")).toBeVisible({ timeout: 5000 });
 
       // Seleccionar 5 estrellas
       const star5 = page.locator('[aria-label="Calificar con 5 estrellas"]').first();
@@ -65,7 +65,7 @@ test.describe("E2E Suite E: Puerta, Calificación y Mensajería de Chat (CU-02, 
       await submitReviewBtn.click();
 
       // Verificar que el modal se cerró
-      await expect(page.locator("text=Calificar Evento (CU-09)")).toHaveCount(0);
+      await expect(page.locator("text=Calificar Evento")).toHaveCount(0);
     }
 
     await logout(page);

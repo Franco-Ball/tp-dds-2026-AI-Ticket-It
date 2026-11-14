@@ -163,7 +163,7 @@ export default function PurchaseCard({
             <Text style={styles.chatBtnText}>Chat</Text>
           </TouchableOpacity>
 
-          {/* Calificar evento si fue utilizada (CU-09) */}
+          {/* Calificar evento si fue utilizada */}
           {estado === "UTILIZADA" && (
             <TouchableOpacity
               style={styles.reviewBtn}
@@ -172,7 +172,7 @@ export default function PurchaseCard({
               accessibilityLabel="Puntuar y dejar reseña al evento"
             >
               <Feather name="star" size={14} color="#eab308" />
-              <Text style={styles.reviewBtnText}>Calificar (CU-09)</Text>
+              <Text style={styles.reviewBtnText}>Calificar</Text>
             </TouchableOpacity>
           )}
 

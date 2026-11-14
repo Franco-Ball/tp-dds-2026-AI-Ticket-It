@@ -82,7 +82,7 @@ export default function EventSalesScreen() {
       setSelectedTicketToValidate(null);
       Alert.alert(
         "¡Entrada Validada con Éxito!",
-        "La entrada ha sido marcada como UTILIZADA. El comprador ahora está habilitado para calificar el evento (CU-09)."
+        "La entrada ha sido marcada como UTILIZADA. El comprador ahora está habilitado para calificar el evento."
       );
       cargarVentas(true);
     } catch (err) {
@@ -154,7 +154,7 @@ export default function EventSalesScreen() {
           <Feather name="arrow-left" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.topBarText}>
-          <Text style={styles.screenTitle}>Panel de Ventas (CU-02)</Text>
+          <Text style={styles.screenTitle}>Panel de Ventas</Text>
           <Text style={styles.eventName} numberOfLines={1}>
             {evento.nombre}
           </Text>
@@ -187,11 +187,11 @@ export default function EventSalesScreen() {
         </View>
       </View>
 
-      {/* CU-02: Desglose de Cupos por Tipo de Entrada */}
+      {/* Desglose de Cupos por Tipo de Entrada */}
       <Card style={styles.tiersSectionCard}>
         <View style={styles.sectionHeader}>
           <Feather name="pie-chart" size={16} color={colors.primaryDark} />
-          <Text style={styles.sectionHeading}>Cupos por Tipo de Entrada (CU-02)</Text>
+          <Text style={styles.sectionHeading}>Cupos por Tipo de Entrada</Text>
         </View>
 
         <View style={styles.tiersList}>

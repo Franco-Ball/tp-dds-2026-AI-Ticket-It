@@ -8,6 +8,7 @@ import {
   RefreshControl,
   StyleSheet,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -37,7 +38,8 @@ export default function ExploreScreen() {
   const [currentSort, setCurrentSort] = useState({ sortBy: "fecha", order: "asc" });
 
   // Estados de control UI
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [sortModalVisible, setSortModalVisible] = useState(false);
@@ -62,30 +64,38 @@ export default function ExploreScreen() {
   }, []);
 
   // Cargar eventos con los filtros actuales
-  const cargarEventos = useCallback(async (isRefresh = false) => {
-    if (!isRefresh) setLoading(true);
-    setError(null);
-
-    try {
-      const data = await eventoService.listarEventos({
-        q: debouncedSearch,
-        categoria: selectedCategoria,
-        sortBy: currentSort.sortBy,
-        order: currentSort.order,
-      });
-
-      if (Array.isArray(data)) {
-        setEventos(data);
+  const cargarEventos = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) {
+        setRefreshing(true);
       } else {
-        setEventos([]);
+        setSearching(true);
       }
-    } catch (err) {
-      setError(err?.message || "No se pudo obtener el catálogo de eventos");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [debouncedSearch, selectedCategoria, currentSort]);
+      setError(null);
+
+      try {
+        const data = await eventoService.listarEventos({
+          q: debouncedSearch,
+          categoria: selectedCategoria,
+          sortBy: currentSort.sortBy,
+          order: currentSort.order,
+        });
+
+        if (Array.isArray(data)) {
+          setEventos(data);
+        } else {
+          setEventos([]);
+        }
+      } catch (err) {
+        setError(err?.message || "No se pudo obtener el catálogo de eventos");
+      } finally {
+        setInitialLoading(false);
+        setSearching(false);
+        setRefreshing(false);
+      }
+    },
+    [debouncedSearch, selectedCategoria, currentSort]
+  );
 
   // Efecto cuando cambian los filtros
   useEffect(() => {
@@ -94,7 +104,6 @@ export default function ExploreScreen() {
 
   // Pull to refresh
   const onRefresh = () => {
-    setRefreshing(true);
     cargarEventos(true);
   };
 
@@ -118,116 +127,112 @@ export default function ExploreScreen() {
     currentSort.sortBy !== "fecha" ||
     currentSort.order !== "asc";
 
-  const renderHeader = () => (
-    <View style={styles.listHeader}>
-      {/* Barra de Búsqueda con Accesibilidad (WCAG) */}
-      <View style={styles.searchBarWrapper}>
-        <Feather name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar por artista, evento o sala..."
-          placeholderTextColor={colors.textSubtle}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          returnKeyType="search"
-          autoCapitalize="none"
-          autoCorrect={false}
-          accessibilityLabel="Campo de búsqueda de eventos"
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity
-            onPress={() => setSearchQuery("")}
-            style={styles.clearSearchBtn}
-            accessibilityRole="button"
-            accessibilityLabel="Borrar texto de búsqueda"
-          >
-            <Feather name="x" size={16} color={colors.textMuted} />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Selector de Categorías (Pills deslizables) */}
-      <CategoryPills
-        categorias={categorias}
-        selectedCategoriaId={selectedCategoria}
-        onSelectCategoria={(catId) => setSelectedCategoria(catId)}
-      />
-
-      {/* Barra de Ordenamiento y Estado de Resultados */}
-      <View style={styles.resultsBar}>
-        <Text style={styles.resultsCount}>
-          {loading ? "Buscando..." : `${eventos.length} evento${eventos.length === 1 ? "" : "s"}`}
-        </Text>
-
-        <View style={styles.filterActions}>
-          {hayFiltrosActivos && (
-            <TouchableOpacity
-              onPress={limpiarFiltros}
-              style={styles.clearFiltersBtn}
-              accessibilityRole="button"
-              accessibilityLabel="Restablecer todos los filtros"
-            >
-              <Text style={styles.clearFiltersText}>Limpiar</Text>
-            </TouchableOpacity>
-          )}
-
-          <TouchableOpacity
-            style={styles.sortButton}
-            onPress={() => setSortModalVisible(true)}
-            accessibilityRole="button"
-            accessibilityLabel={`Ordenar eventos. Actualmente: ${getSortLabel()}`}
-          >
-            <Feather name="sliders" size={14} color={colors.primaryDark} />
-            <Text style={styles.sortButtonText} numberOfLines={1}>
-              {getSortLabel()}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Manejo de los 4 estados de la UI (Clase 10) */}
-        {loading && !refreshing ? (
-          <View style={styles.centerContainer}>
-            {renderHeader()}
+        {/* Cabecera Fija: Búsqueda, Categorías y Ordenamiento */}
+        {/* Permanece montada permanentemente para garantizar foco ininterrumpido al tipear */}
+        <View style={styles.listHeader}>
+          {/* Barra de Búsqueda con Accesibilidad (WCAG) */}
+          <View style={styles.searchBarWrapper}>
+            <Feather name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Buscar por artista, evento o sala..."
+              placeholderTextColor={colors.textSubtle}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              returnKeyType="search"
+              autoCapitalize="none"
+              autoCorrect={false}
+              accessibilityLabel="Campo de búsqueda de eventos"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={() => setSearchQuery("")}
+                style={styles.clearSearchBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Borrar texto de búsqueda"
+              >
+                <Feather name="x" size={16} color={colors.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Selector de Categorías (Pills deslizables) */}
+          <CategoryPills
+            categorias={categorias}
+            selectedCategoriaId={selectedCategoria}
+            onSelectCategoria={(catId) => setSelectedCategoria(catId)}
+          />
+
+          {/* Barra de Ordenamiento y Estado de Resultados */}
+          <View style={styles.resultsBar}>
+            <View style={styles.resultsCountBox}>
+              <Text style={styles.resultsCount}>
+                {searching
+                  ? "Buscando..."
+                  : `${eventos.length} evento${eventos.length === 1 ? "" : "s"}`}
+              </Text>
+              {searching && (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.primaryDark}
+                  style={styles.searchingIndicator}
+                />
+              )}
+            </View>
+
+            <View style={styles.filterActions}>
+              {hayFiltrosActivos && (
+                <TouchableOpacity
+                  onPress={limpiarFiltros}
+                  style={styles.clearFiltersBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel="Restablecer todos los filtros"
+                >
+                  <Text style={styles.clearFiltersText}>Limpiar</Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={styles.sortButton}
+                onPress={() => setSortModalVisible(true)}
+                accessibilityRole="button"
+                accessibilityLabel={`Ordenar eventos. Actualmente: ${getSortLabel()}`}
+              >
+                <Feather name="sliders" size={14} color={colors.primaryDark} />
+                <Text style={styles.sortButtonText} numberOfLines={1}>
+                  {getSortLabel()}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        {/* Área de Contenido y Resultados */}
+        {initialLoading ? (
+          <View style={styles.stateContainer}>
             <LoadingState message="Cargando catálogo de espectáculos..." />
           </View>
         ) : error ? (
-          <View style={styles.centerContainer}>
-            {renderHeader()}
+          <View style={styles.stateContainer}>
             <ErrorState message={error} onRetry={() => cargarEventos()} />
           </View>
         ) : eventos.length === 0 ? (
-          <FlatList
-            data={[]}
-            ListHeaderComponent={renderHeader}
-            ListEmptyComponent={
-              <EmptyState
-                icon="calendar"
-                title="No hay eventos disponibles"
-                description="No encontramos espectáculos con los criterios ingresados. Prueba cambiando la búsqueda o seleccionando otra categoría."
-                actionLabel={hayFiltrosActivos ? "Limpiar Filtros" : undefined}
-                onAction={hayFiltrosActivos ? limpiarFiltros : undefined}
-              />
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={[colors.primaryDark]}
-              />
-            }
-            contentContainerStyle={styles.listContent}
-          />
+          <View style={styles.stateContainer}>
+            <EmptyState
+              icon="calendar"
+              title="No hay eventos disponibles"
+              description="No encontramos espectáculos con los criterios ingresados. Prueba cambiando la búsqueda o seleccionando otra categoría."
+              actionLabel={hayFiltrosActivos ? "Limpiar Filtros" : undefined}
+              onAction={hayFiltrosActivos ? limpiarFiltros : undefined}
+            />
+          </View>
         ) : (
           <FlatList
             data={eventos}
             keyExtractor={(item) => item.id}
-            ListHeaderComponent={renderHeader}
             renderItem={({ item }) => (
               <EventCard
                 evento={item}
@@ -269,13 +274,18 @@ const styles = StyleSheet.create({
   centerContainer: {
     flex: 1,
   },
+  stateContainer: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+  },
   listContent: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
   },
   listHeader: {
     paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.xs,
+    paddingHorizontal: spacing.md,
   },
   searchBarWrapper: {
     flexDirection: "row",
@@ -309,10 +319,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xs,
   },
+  resultsCountBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   resultsCount: {
     fontSize: 13,
     fontWeight: "700",
     color: colors.textMuted,
+  },
+  searchingIndicator: {
+    marginLeft: 2,
   },
   filterActions: {
     flexDirection: "row",

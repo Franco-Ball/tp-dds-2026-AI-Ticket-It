@@ -147,19 +147,22 @@ npm run start:dev
 
 El sistema cuenta con un seeder automático de datos con usuarios y espectáculos de prueba listos para usar:
 
-| Rol | Email | Contraseña | Capacidades Principales |
-| :--- | :--- | :--- | :--- |
-| **Comprador** | `comprador@demo.com` | `comprador123` | Explorar eventos, comprar entradas, ver compras activas con Ticket QR, chatear y calificar eventos asistidos. |
-| **Organizador** | `organizador@demo.com` | `organizador123` | Publicar nuevos eventos, ver panel de recaudación y ventas en puerta, validar ingresos y responder chats. |
+| Rol | Usuario | Email | Contraseña | Compras y Casos de Uso Semilla |
+| :--- | :--- | :--- | :--- | :--- |
+| **Organizador** | Olga Organizadora | `organizador@demo.com` | `organizador123` | Publicar nuevos eventos, ver panel de recaudación y ventas en puerta, validar ingresos y responder chats. |
+| **Comprador** | Carlos Comprador | `comprador@demo.com` | `comprador123` | Entradas de Coldplay (CONFIRMADA con chat de 3 mensajes), Grönholm (PENDIENTE) y Rock Nacional (UTILIZADA con reseña). |
+| **Compradora** | Lucía Gómez | `lucia@demo.com` | `lucia123` | Entradas de Coldplay (CONFIRMADA con chat sobre accesibilidad) y Duki (CONFIRMADA). |
+| **Comprador** | Marcos Rossi | `marcos@demo.com` | `marcos123` | Entradas de El Método Grönholm (CONFIRMADA con chat de estacionamiento) y Torneo ATP (CONFIRMADA). |
+| **Compradora** | Sofía Fernández | `sofia@demo.com` | `sofia123` | Entradas de Les Luthiers (CONFIRMADA con chat de función) y Cosquín Rock. |
 
-* **Documentación Interactiva Swagger:** [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+* **Documentación Interactiva Swagger:** [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
 
 ---
 
 ## 📚 8. Documentación Adicional del Repositorio
 
 * [Decisiones de Diseño de Software (`docs/DECISIONES_DE_DISENO.md`)](docs/DECISIONES_DE_DISENO.md): Detalle exhaustivo de patrones, Clean Architecture, DDD, manejo de concurrencia y accesibilidad.
-* [Bitácora de Desarrollo Asistido por IA (`docs/BITACORA_IA.md`)](docs/BITACORA_IA.md): Análisis reflexivo, herramientas empleadas, ganancias de productividad, dificultades y aprendizajes.
+* [Conclusión Final de Desarrollo con IA (`docs/TRABAJO PRÁCTICO INDIVIDUAL - Conclusión Final.pdf`)](docs/TRABAJO%20PRÁCTICO%20INDIVIDUAL%20-%20Conclusión%20Final.pdf): Informe formal en PDF con la reflexión crítica, herramientas empleadas, ganancias de productividad, dificultades y aprendizajes.
 * [Plan de Sprints y Matriz de Trazabilidad (`docs/PLAN_DE_SPRINTS.md`)](docs/PLAN_DE_SPRINTS.md): Evolución sprint por sprint con criterios de aceptación (DoD).
 * [Guía de Git Flow (`docs/GIT_FLOW.md`)](docs/GIT_FLOW.md): Estrategia de ramas, convención de commits atómicos y workflow de desarrollo.
 * [Guía de Grabación del Video (`docs/GUIA_DEMO_VIDEO.md`)](docs/GUIA_DEMO_VIDEO.md): Tiempos, guión paso a paso y checklist técnico para la entrega audiovisual.
